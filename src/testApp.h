@@ -1,8 +1,6 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxFX.h"
-
 
 class testApp : public ofBaseApp{
 public:
@@ -21,6 +19,17 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
 		
-    ofVideoGrabber        vidGrabber;
-    ofxGrayscale          grayscale;
+    ofVideoGrabber  vidGrabber;
+    
+    ofImage         prev;
+    ofImage         actual;
+    
+    int nFrameMax;  // number of max frame
+    int nFrame;     // frame head
+    
+    int nDir;
+    //  -1  backward
+    //  0   no move
+    //  1   forward
+    
 };
