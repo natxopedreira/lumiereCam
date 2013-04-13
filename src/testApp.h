@@ -32,4 +32,5 @@ public:
     //  0   no move
     //  1   forward
     
+    bool    bRec;
 };

@@ -16,9 +16,10 @@ void testApp::setup(){
 	vidGrabber.initGrabber(camWidth,camHeight,true);
     actual.allocate(camWidth, camHeight, OF_IMAGE_GRAYSCALE);
     
-    nDir = 1;
+    nDir = 0;
+    bRec = false;
     nFrame = -1;
-    nFrameMax = -1;
+    nFrameMax = 0;
 }
 
 
@@ -27,19 +28,27 @@ void testApp::update(){
     
 	vidGrabber.update();
 	
-	if ( nDir > 0 && nFrame == nFrameMax ){
-        //  Record a new frame
-        //
-        actual.saveImage(ofToString(nFrameMax)+".jpg");
-        actual.setFromPixels(vidGrabber.getPixelsRef());
-        nDir = 0;
-	} else if ( nDir != 0 ){
+	if ( nDir > 0 && (nFrame == nFrameMax) ){
+        
+        if (vidGrabber.isFrameNew() ){
+            
+            //  Record a new frame
+            //
+            actual.saveImage(ofToString(nFrameMax)+".jpg");
+            actual.setFromPixels(vidGrabber.getPixelsRef());
+            bRec = true;
+            nDir = 0;
+        }
+        
+	} else if ( nDir != 0 && nFrame > 0){
         
         //  Go back and fordward
         //
         actual.loadImage(ofToString(nFrame)+".jpg");
         nDir = 0;
-    } 
+    } else if ( nDir == -1 && nFrame == 0){
+        nDir = 0;
+    }
 
 }
 
@@ -51,20 +60,32 @@ void testApp::draw(){
 	actual.draw(ofGetWidth()*0.5 - actual.width*0.5, ofGetHeight()*0.5 - actual.height*0.5);
     
     ofDrawBitmapString("Frame: " + ofToString(nFrame) + "/" + ofToString(nFrameMax), 15,15);
+    ofDrawBitmapString("Dir: " + ofToString(nDir), 15,30);
+    
+    if ( bRec ){
+        ofSetColor(255,0,0);
+        ofCircle( ofGetWidth()*0.5 - actual.width*0.5 + 20, ofGetHeight()*0.5 - actual.height*0.5 + 20, 10);
+        bRec = false;
+    }
 }
 
 
 //--------------------------------------------------------------
-void testApp::keyPressed  (int key){ 
-    if (key == OF_KEY_RIGHT){
-        nDir = 1;
-        nFrame++;
-        if (nFrame > nFrameMax)
-            nFrameMax = nFrame;
-    } else if (key == OF_KEY_LEFT){
-        nDir = -1;
-        if (nFrame > 0)
-            nFrame--;
+void testApp::keyPressed  (int key){
+    
+    if (nDir == 0){
+        if (key == OF_KEY_RIGHT){
+            nDir = 1;
+            nFrame++;
+            if (nFrame > nFrameMax)
+                nFrameMax = nFrame;
+        } else if (key == OF_KEY_LEFT){
+            if (nFrame > 0)
+                nDir = -1;
+            
+            if (nFrame > 0)
+                nFrame--;
+        }
     }
 }
 
