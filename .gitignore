@@ -8,8 +8,9 @@ Release*/
 *.app/
 *.pyc
 .svn/
- 
- 
+  
+*.jpg
+
 #XCode
 *.pbxuser
 *.perspective
