@@ -2,24 +2,25 @@
 
 //--------------------------------------------------------------
 void testApp::setup(){
+    
+    ofEnableAlphaBlending();
 	ofSetVerticalSync(true);
 	
-	int camWidth = 640;
-	int camHeight = 480;
+	int camWidth = 320*2;
+	int camHeight = 240*2;
 
-	vidGrabber.setVerbose(false);
+#ifndef TARGET_OSX
 	vidGrabber.setDeviceID(1);
+#endif
 	vidGrabber.setDesiredFrameRate(15);
-	vidGrabber.setUseTexture(true);
 	vidGrabber.initGrabber(camWidth,camHeight);
-	
-	videoTexture.allocate(camWidth,camHeight, GL_RGB);	
+    
 }
 
 
 //--------------------------------------------------------------
 void testApp::update(){
-	
+    
 	vidGrabber.update();
 	
 	if (vidGrabber.isFrameNew()){
@@ -30,12 +31,10 @@ void testApp::update(){
 
 //--------------------------------------------------------------
 void testApp::draw(){
-
-	ofBackground(100,100,100);
+	ofBackground(0);
 		
-        ofSetColor(255);
-	vidGrabber.draw(0,0,ofGetScreenWidth(),ofGetScreenHeight());
-	//videoTexture.draw(20+camWidth,20,camWidth,camHeight);
+    ofSetColor(255);
+	vidGrabber.draw(0,0);//,ofGetScreenWidth(),ofGetScreenHeight());
 }
 
 
