@@ -13,7 +13,8 @@ void testApp::setup(){
 	vidGrabber.setDeviceID(1);
 #endif
 	vidGrabber.setDesiredFrameRate(15);
-	vidGrabber.initGrabber(camWidth,camHeight);
+	vidGrabber.initGrabber(camWidth,camHeight,true);
+    grayscale.allocate(camWidth, camHeight);
     
 }
 
@@ -24,7 +25,8 @@ void testApp::update(){
 	vidGrabber.update();
 	
 	if (vidGrabber.isFrameNew()){
-		
+        grayscale << vidGrabber.getTextureReference();
+        grayscale.update();
 	}
 
 }
@@ -34,7 +36,8 @@ void testApp::draw(){
 	ofBackground(0);
 		
     ofSetColor(255);
-	vidGrabber.draw(0,0);//,ofGetScreenWidth(),ofGetScreenHeight());
+//	vidGrabber.draw(0,0);//,ofGetScreenWidth(),ofGetScreenHeight());
+    grayscale.draw();
 }
 
 

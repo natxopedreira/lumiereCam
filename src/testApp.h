@@ -1,6 +1,8 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxFX.h"
+
 
 class testApp : public ofBaseApp{
 public:
@@ -20,5 +22,5 @@ public:
     void gotMessage(ofMessage msg);
 		
     ofVideoGrabber        vidGrabber;
-    
+    ofxGrayscale          grayscale;
 };
