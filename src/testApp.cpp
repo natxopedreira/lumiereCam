@@ -60,7 +60,7 @@ void testApp::draw(){
 	actual.draw(ofGetWidth()*0.5 - actual.width*0.5, ofGetHeight()*0.5 - actual.height*0.5);
     
     ofDrawBitmapString("Frame: " + ofToString(nFrame) + "/" + ofToString(nFrameMax), 15,15);
-    ofDrawBitmapString("Dir: " + ofToString(nDir), 15,30);
+    ofDrawBitmapString("fps: " + ofToString(ofGetFrameRate()), 15,30);
     
     if ( bRec ){
         ofSetColor(255,0,0);
