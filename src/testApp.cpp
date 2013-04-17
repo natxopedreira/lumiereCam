@@ -34,8 +34,7 @@ void testApp::update(){
             
             //  Record a new frame
             //
-            actual.saveImage(ofToString(nFrameMax)+".jpg");
-            //actual.setFromPixels(vidGrabber.getPixelsRef());
+            actual.saveImage(ofToString(nFrameMax)+".jpg", OF_IMAGE_QUALITY_LOW);
             
             int w = vidGrabber.getWidth();
             int h = vidGrabber.getHeight();
