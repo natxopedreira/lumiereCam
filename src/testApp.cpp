@@ -35,7 +35,21 @@ void testApp::update(){
             //  Record a new frame
             //
             actual.saveImage(ofToString(nFrameMax)+".jpg");
-            actual.setFromPixels(vidGrabber.getPixelsRef());
+            //actual.setFromPixels(vidGrabber.getPixelsRef());
+            
+            int w = vidGrabber.getWidth();
+            int h = vidGrabber.getHeight();
+            int nPixels = w*h;
+            
+            unsigned char * pixelsRGB = vidGrabber.getPixels();
+            unsigned char * pixels = new unsigned char[nPixels];
+            
+            for(int i = 0; i < nPixels; i++){
+                pixels[i] = pixelsRGB[i*3]; //red
+            }
+            
+            actual.setFromPixels(pixels, w, h, OF_IMAGE_GRAYSCALE);
+            
             bRec = true;
             nDir = 0;
         }

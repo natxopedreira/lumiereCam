@@ -323,15 +323,6 @@
 				HEADER_SEARCH_PATHS = (
 					"$(OF_CORE_HEADERS)",
 					src,
-					../../../addons/ofxFX/libs,
-					../../../addons/ofxFX/src,
-					../../../addons/ofxFX/src/composers,
-					../../../addons/ofxFX/src/filters,
-					../../../addons/ofxFX/src/generative,
-					../../../addons/ofxFX/src/interactive,
-					../../../addons/ofxFX/src/operations,
-					../../../addons/ofxFX/src/particles,
-					../../../addons/ofxFX/src/transformers,
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"-D__MACOSX_CORE__",
@@ -366,15 +357,6 @@
 				HEADER_SEARCH_PATHS = (
 					"$(OF_CORE_HEADERS)",
 					src,
-					../../../addons/ofxFX/libs,
-					../../../addons/ofxFX/src,
-					../../../addons/ofxFX/src/composers,
-					../../../addons/ofxFX/src/filters,
-					../../../addons/ofxFX/src/generative,
-					../../../addons/ofxFX/src/interactive,
-					../../../addons/ofxFX/src/operations,
-					../../../addons/ofxFX/src/particles,
-					../../../addons/ofxFX/src/transformers,
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"-D__MACOSX_CORE__",
