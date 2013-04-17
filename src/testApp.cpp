@@ -13,8 +13,10 @@ void testApp::setup(){
 	vidGrabber.setDeviceID(1);
 #endif
 	vidGrabber.setDesiredFrameRate(15);
-	vidGrabber.initGrabber(camWidth,camHeight,true);
+	vidGrabber.initGrabber(camWidth,camHeight,false);
+    
     actual.allocate(camWidth, camHeight, OF_IMAGE_GRAYSCALE);
+//    actual.setUseTexture(false);
     
     nDir = 0;
     bRec = false;
@@ -34,14 +36,14 @@ void testApp::update(){
             
             //  Record a new frame
             //
-            actual.saveImage(ofToString(nFrameMax)+".jpg", OF_IMAGE_QUALITY_LOW);
+            actual.saveImage(ofToString(nFrameMax)+".jpg", OF_IMAGE_QUALITY_MEDIUM);
             
             int w = vidGrabber.getWidth();
             int h = vidGrabber.getHeight();
             int nPixels = w*h;
             
             unsigned char * pixelsRGB = vidGrabber.getPixels();
-            unsigned char * pixels = new unsigned char[nPixels];
+            unsigned char * pixels = actual.getPixels();
             
             for(int i = 0; i < nPixels; i++){
                 pixels[i] = pixelsRGB[i*3]; //red
