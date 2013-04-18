@@ -18,8 +18,12 @@ public:
     void windowResized(int w, int h);
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
-		
-    ofVideoGrabber  vidGrabber;
+
+#ifdef TARGET_OSX
+    ofVideoGrabber  cam;
+#else
+    ofGstVideoUtils cam;
+#endif
     
     ofImage         prev;
     ofImage         actual;

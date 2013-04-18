@@ -7,12 +7,32 @@ void testApp::setup(){
 	
 	int camWidth = 320*2;
 	int camHeight = 240*2;
+    int camFps = 15*2;
 
-#ifndef TARGET_OSX
-	vidGrabber.setDeviceID(1);
+#ifdef TARGET_OSX
+	cam.setDesiredFrameRate(camFps);
+	cam.initGrabber(camWidth,camHeight,false);
+#else
+	//optimized pipeline for the PS3Eye
+    //
+	stringstream pipeline;
+	pipeline << "v4l2src name=video_source device=/dev/video0 ! video/x-raw-rgb,";
+	pipeline << "width="		<< camWidth	 <<	",";
+	pipeline << "height="		<< camHeight <<	",";
+	pipeline << "framerate="	<< camFps	 <<	"/1";
+    
+	bool didStart = cam.setPipeline(pipeline.str(), 24, false, camWidth, camHeight);
+	if(didStart){
+		ofLogVerbose() << "set pipeline SUCCESS";
+	} else {
+		ofLogError() << "set pipeline FAIL, pipeline: " << pipeline.str();
+	}
+    
+	cam.play();
+//    cam.setDeviceID(1);
 #endif
-	vidGrabber.setDesiredFrameRate(15);
-	vidGrabber.initGrabber(camWidth,camHeight,false);    
+    
+    
     actual.allocate(camWidth, camHeight, OF_IMAGE_GRAYSCALE);
     
     bRec = false;
@@ -27,47 +47,56 @@ void testApp::setup(){
 //--------------------------------------------------------------
 void testApp::update(){
     
-	vidGrabber.update();
+	cam.update();
 	
 	if ( nDir > 0) {
         // >>
         //
         
         if (nFrame == nFrameMax-1){
-            //  Rec
+            
+            //  REC
+            //
+            //  The recording is made in two stapes ( one in a frame and the other in the next one)
+            //  In order to distribute the work and make things easyier for the CPU
             //
             if (bRequest){
-                if (vidGrabber.isFrameNew() ){
+                
+                //  Request the new pixels to the camera
+                //
+                if (cam.isFrameNew() ){
                     
-                    int w = vidGrabber.getWidth();
-                    int h = vidGrabber.getHeight();
+                    int w = cam.getWidth();
+                    int h = cam.getHeight();
                     int nPixels = w*h;
                     
                     unsigned char * pixels = actual.getPixels();
-                    unsigned char * pixelsRGB = vidGrabber.getPixels();
+                    unsigned char * pixelsRGB = cam.getPixels();
                     for(int i = 0; i < nPixels; i++){
                         pixels[i] = pixelsRGB[i*3]; //red
                     }
                     actual.setFromPixels(pixels, w, h, OF_IMAGE_GRAYSCALE);
                     bRequest = false;
                     bRec = true;
-                    
-                    cout << ofGetFrameNum() << " Request" << endl;
                 }
                 
             } else {
+                
+                //  Save the pixels into an image
+                //
                 nFrame++;
                 actual.saveImage(ofToString(nFrame)+".jpg", OF_IMAGE_QUALITY_MEDIUM);
                 nFrameMax++;
                 bRec = false;
                 nDir = 0;
-                
-                cout << ofGetFrameNum() << " SAVED" << endl;
             }
             
             
         } else {
-            //  Play
+            
+            //  PLAY
+            //
+            //  Load the next frame
             //
             nFrame++;
             actual.loadImage(ofToString(nFrame)+".jpg");
@@ -76,6 +105,9 @@ void testApp::update(){
         
     } else if ( nDir < 0){
         // <<
+        //
+        
+        //  Load previus frame
         //
         if ( nFrame > 0){
             nFrame--;
