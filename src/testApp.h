@@ -19,10 +19,10 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
 
-#ifdef TARGET_OSX
-    ofVideoGrabber  cam;
-#else
+#ifndef TARGET_OSX
     ofGstVideoUtils cam;
+#else
+    ofVideoGrabber  cam;
 #endif
     
     ofImage         prev;

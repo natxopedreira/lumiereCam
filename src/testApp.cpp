@@ -8,11 +8,8 @@ void testApp::setup(){
 	int camWidth = 320*2;
 	int camHeight = 240*2;
     int camFps = 15*2;
-
-#ifdef TARGET_OSX
-	cam.setDesiredFrameRate(camFps);
-	cam.initGrabber(camWidth,camHeight,false);
-#else
+    
+#ifndef TARGET_OSX
 	//optimized pipeline for the PS3Eye
     //
 	stringstream pipeline;
@@ -29,14 +26,16 @@ void testApp::setup(){
 	}
     
 	cam.play();
-//    cam.setDeviceID(1);
+    //    cam.setDeviceID(1);
+#else
+	cam.setDesiredFrameRate(camFps);
+	cam.initGrabber(camWidth,camHeight,false);
 #endif
     
     
     actual.allocate(camWidth, camHeight, OF_IMAGE_GRAYSCALE);
     
     bRec = false;
-    
     bRequest = true;
     nDir = 1;
     nFrame = -1;
@@ -64,7 +63,7 @@ void testApp::update(){
                 
                 //  Request the new pixels to the camera
                 //
-                if (cam.isFrameNew() ){
+                if ( cam.isFrameNew() ){
                     
                     int w = cam.getWidth();
                     int h = cam.getHeight();
