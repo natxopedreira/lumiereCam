@@ -8,7 +8,12 @@ Release*/
 *.app/
 *.pyc
 .svn/
-  
+
+.AppleDouble/  
+src/.AppleDouble/
+bin/.AppleDouble/
+bin/data/.AppleDouble/
+bin/libs/.AppleDouble/
 *.jpg
 
 #XCode
