@@ -7,7 +7,7 @@ void testApp::setup(){
 	
 	int camWidth = 320*2;
 	int camHeight = 240*2;
-        int camFps = 15;
+    int camFps = 15;
     
 #ifndef TARGET_OSX
     //  Setup WiringPi
@@ -20,7 +20,7 @@ void testApp::setup(){
     pinMode(3,INPUT);
     
 	//optimized pipeline for the PS3Eye
-    	//
+    //
 	cam.allocate(camWidth,camHeight,8);
 	stringstream pipeline;
 	pipeline << "v4l2src name=video_source device=/dev/video0 ! video/x-raw-rgb,";
@@ -36,7 +36,10 @@ void testApp::setup(){
 	}
     
 	cam.play();
-    //    cam.setDeviceID(1);
+    
+    //  Or if don't use gstreamer
+    //
+//    cam.setDeviceID(1);
 #else
 	cam.setDesiredFrameRate(camFps);
 	cam.initGrabber(camWidth,camHeight,false);
@@ -69,7 +72,6 @@ void testApp::update(){
         }
     }
 #endif
-    
 	
 	if ( nDir > 0) {
         // >>
