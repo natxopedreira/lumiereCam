@@ -66,12 +66,10 @@ void testApp::update(){
     //
     if (nDir == 0){
         if ( digitalRead(0) != 0 ){
-            cout << "PIN 0 = " << digitalRead(0) << endl;
             nDir = 1;
             if (nFrame == nFrameMax-1)
                 bRequest = true;
         } else if ( digitalRead(3) != 0  ){
-            cout << "PIN 3 = " << digitalRead(3) << endl;
             nDir = -1;
         }
     }
