@@ -4,6 +4,8 @@
 void testApp::setup(){
     ofEnableAlphaBlending();
 	ofSetVerticalSync(true);
+	ofSetFrameRate(30);
+
 	
 	int camWidth = 320*2;
 	int camHeight = 240*2;
