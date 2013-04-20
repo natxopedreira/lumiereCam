@@ -10,6 +10,15 @@ void testApp::setup(){
     int camFps = 15*2;
     
 #ifndef TARGET_OSX
+    //  Setup WiringPi
+    //
+    if(wiringPiSetup() == -1){
+        printf("Error on wiringPi setup\n");
+    }
+    
+    pinMode(0,INPUT);
+    pinMode(3,INPUT);
+    
 	//optimized pipeline for the PS3Eye
     //
 	stringstream pipeline;
@@ -31,8 +40,7 @@ void testApp::setup(){
 	cam.setDesiredFrameRate(camFps);
 	cam.initGrabber(camWidth,camHeight,false);
 #endif
-    
-    
+
     actual.allocate(camWidth, camHeight, OF_IMAGE_GRAYSCALE);
     
     bRec = false;
@@ -45,8 +53,22 @@ void testApp::setup(){
 
 //--------------------------------------------------------------
 void testApp::update(){
-    
 	cam.update();
+    
+#ifndef TARGET_OSX
+    // Check for PINS
+    //
+    if (nDir == 0){
+        if ( digitalRead(0) != 0 ){
+            nDir = 1;
+            if (nFrame == nFrameMax-1)
+                bRequest = true;
+        } else if ( digitalRead(3) != 0  ){
+            nDir = -1;
+        }
+    }
+#endif
+    
 	
 	if ( nDir > 0) {
         // >>

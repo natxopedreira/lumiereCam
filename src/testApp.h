@@ -2,6 +2,20 @@
 
 #include "ofMain.h"
 
+#ifndef TARGET_OSX
+//  How to install wiringPi at:
+//  https://github.com/openFrameworks-RaspberryPi/openFrameworks/wiki/Raspberry-Pi-Using-the-GPIO-pins-with-Wiring-Pi-and-openFrameworks
+//
+//  We will use WiringPi Pins 0 ( BCM 17 / GPIO0 )
+//  and 3 ( BCM 22 / GPIO3 ) for back (<<) and forwards (>>)
+//  https://projects.drogon.net/raspberry-pi/wiringpi/pins/
+//
+//  Diagram for simple switches at:
+//  http://www.cl.cam.ac.uk/projects/raspberrypi/tutorials/robot/buttons_and_switches/
+//
+#include "wiringPi.h"
+#endif
+
 class testApp : public ofBaseApp{
 public:
     
