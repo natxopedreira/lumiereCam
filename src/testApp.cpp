@@ -42,12 +42,13 @@ void testApp::setup(){
     //  Or if don't use gstreamer
     //
 //    cam.setDeviceID(1);
-//    cam.setPixelFormat(OF_PIXELFORMAT_MONO)
+//    cam.setPixelFormat(OF_PIXELS_MONO)
 //    cam.setDesiredFrameRate(camFps);
 //	cam.initGrabber(camWidth,camHeight,false);
 #else
 	cam.setDesiredFrameRate(camFps);
 	cam.initGrabber(camWidth,camHeight,false);
+    cam.setPixelFormat(OF_PIXELS_MONO);
 #endif
 
     actual.allocate(camWidth, camHeight, OF_IMAGE_GRAYSCALE);
@@ -102,7 +103,11 @@ void testApp::update(){
                     unsigned char * pixels = actual.getPixels();
                     unsigned char * pixelsRGB = cam.getPixels();
                     for(int i = 0; i < nPixels; i++){
+#ifndef TARGET_OSX
+                        pixels[i] = pixelsRGB[i]; //red
+#else
                         pixels[i] = pixelsRGB[i*3]; //red
+#endif
                     }
                     actual.setFromPixels(pixels, w, h, OF_IMAGE_GRAYSCALE);
                     bRequest = false;
