@@ -25,12 +25,12 @@ void testApp::setup(){
     //
 	cam.allocate(camWidth,camHeight,8);
 	stringstream pipeline;
-	pipeline << "v4l2src name=video_source device=/dev/video0 ! video/x-raw-rgb,";
+	pipeline << "v4l2src name=video_source device=/dev/video0 ! video/x-raw-yuv, ";// video/x-raw-rgb,";
 	pipeline << "width="		<< camWidth	 <<	",";
 	pipeline << "height="		<< camHeight 	<<	",";
-	pipeline << "framerate="	<< camFps	 <<	"/1 ";
+	pipeline << "framerate="	<< camFps	 <<	"/1 ! ffmpegcolorspace ";
     
-	bool didStart = cam.setPipeline(pipeline.str(), 24, false, camWidth, camHeight);
+	bool didStart = cam.setPipeline(pipeline.str(), 8, false, camWidth, camHeight);
 	if(didStart){
 		ofLogVerbose() << "set pipeline SUCCESS";
 	} else {
@@ -42,6 +42,9 @@ void testApp::setup(){
     //  Or if don't use gstreamer
     //
 //    cam.setDeviceID(1);
+//    cam.setPixelFormat(OF_PIXELFORMAT_MONO)
+//    cam.setDesiredFrameRate(camFps);
+//	cam.initGrabber(camWidth,camHeight,false);
 #else
 	cam.setDesiredFrameRate(camFps);
 	cam.initGrabber(camWidth,camHeight,false);
