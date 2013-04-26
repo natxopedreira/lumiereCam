@@ -6,7 +6,7 @@
 //
 //
 
-#ifdef OF_TARGET_LINUXARMV6L
+#ifdef TARGET_RASPBERRY_PI
 
 #include "AnalogIn.h"
 

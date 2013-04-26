@@ -6,7 +6,7 @@
 //  and http://raspberrypihobbyist.blogspot.com/2012/12/analog-interface.html
 //
 
-#ifdef OF_TARGET_LINUXARMV6L
+#ifdef TARGET_RASPBERRY_PI
 
 #pragma once
 
