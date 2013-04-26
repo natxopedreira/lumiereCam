@@ -6,27 +6,29 @@
 //
 //
 
-#ifdef TARGET_RASPBERRY_PI
-
 #include "AnalogIn.h"
 
 AnalogIn::AnalogIn(){
     
-	isReady         = false;
-    didPotChange    = false;
-	changeAmount    = 0;
-	lastPotValue    = 0;
-	potValue        = 0;
+	isReady      = false;
+    didChange    = false;
+	changeAmount = 0;
+	lastValue    = 0;
+	value        = 0;
     
     //10k trim pot connected to adc #0
-    potentiometerInput = 0;
+    input = 0;
 }
 
 
 bool AnalogIn::setup(){
     
     isReady     = false;
-	int status  = wiringPiSPISetup(0, 1000000);
+	int status  = -1;
+    
+#ifdef TARGET_RASPBERRY_PI
+    status  = wiringPiSPISetup(0, 1000000);
+#endif
     
 	if (status != -1){
 		ofLogVerbose() << "wiringPiSetup PASS";
@@ -45,16 +47,16 @@ bool AnalogIn::setup(){
 
 void AnalogIn::threadedFunction(){
 	while ( isThreadRunning() ){
-		didPotChange = false;
+		didChange = false;
 		
-		potValue = readAnalogDigitalConvertor();
-		changeAmount = abs(potValue - lastPotValue);
+		value = readAnalogDigitalConvertor();
+		changeAmount = abs(value - lastValue);
         
 		if(changeAmount!=0) {
-            didPotChange = true;
+            didChange = true;
         }
         
-		lastPotValue = potValue;
+		lastValue = value;
         sleep(10);
 	}
 }
@@ -63,12 +65,12 @@ int  AnalogIn::readAnalogDigitalConvertor() {
 	uint8_t buffer[3];
     
 	buffer[0] = 1;
-	buffer[1] = (8+potentiometerInput)<<4;
+	buffer[1] = (8+input)<<4;
 	buffer[2] = 0;
     
+#ifdef TARGET_RASPBERRY_PI
 	wiringPiSPIDataRW(0, buffer, 3);
+#endif
     
 	return ((buffer[1]&3) << 8) + buffer[2];
 }
-
-#endif

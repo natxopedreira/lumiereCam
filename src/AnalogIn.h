@@ -6,32 +6,32 @@
 //  and http://raspberrypihobbyist.blogspot.com/2012/12/analog-interface.html
 //
 
-#ifdef TARGET_RASPBERRY_PI
-
 #pragma once
 
 #include "ofMain.h"
+
+#ifdef TARGET_RASPBERRY_PI
 #include "wiringPi.h"
+#endif
 
 class AnalogIn: public ofThread {
 public:
 	AnalogIn();
     
 	bool    setup();
-	void    threadedFunction();
-	int     readAnalogDigitalConvertor();
-    
-	int     potentiometerInput;
 	
-	int     lastPotValue;
-	int     potValue;
+	int     lastValue;
+	int     value;
 	int     changeAmount;
-	bool    didPotChange;
 	
 	bool    doToleranceCheck;
 	int     tolerance;
-	
+private:
+    void    threadedFunction();
+	int     readAnalogDigitalConvertor();
+    int     input;
+    bool    didChange;
 	bool    isReady;
 };
 
-#endif
+

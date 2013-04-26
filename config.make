@@ -87,10 +87,12 @@
 # $(PROJECT_ROOT)/bin/libs directory.  The following LDFLAGS tell the linker to
 # add a runtime path to search for those shared libraries, since they aren't 
 # incorporated directly into the final executable application binary.
-# TODO: should this be a default setting?
-# PROJECT_LDFLAGS=-Wl,-rpath=./libs
-PROJECT_LDFLAGS=-Wl,-rpath=./libs
-PROJECT_LDFLAGS += -lwiringPi
+################################################################################
+WIRINGPI_DIR = $(PROJECT_ROOT)/wiringPi
+WIRING_PI_LIB_DIR = $(WIRINGPI_DIR)/libs
+WIRING_PI_LIB = $(WIRING_PI_LIB_DIR)/libwiringPi.a
+
+PROJECT_LDFLAGS=-Wl,-rpath=./libs -L$(WIRING_PI_LIB_DIR) $(WIRING_PI_LIB)
 
 ################################################################################
 # PROJECT DEFINES
@@ -118,7 +120,8 @@ PROJECT_LDFLAGS += -lwiringPi
 #
 #   Note: Leave a leading space when adding list items with the += operator
 ################################################################################
-# PROJECT_CFLAGS = 
+WIRING_PI_INCLUDE_DIR = $(WIRINGPI_DIR)/include
+PROJECT_CFLAGS = -I$(WIRING_PI_INCLUDE_DIR)
 
 ################################################################################
 # PROJECT OPTIMIZATION CFLAGS

@@ -37,12 +37,10 @@ void testApp::setup(){
 	}
     
 	cam.play();
-    
-    isReady = analogIn.setup();
 #else
 	cam.setDesiredFrameRate(camFps);
-	cam.initGrabber(camWidth,camHeight,false);
-    cam.setPixelFormat(OF_PIXELS_MONO);
+	cam.setPixelFormat(OF_PIXELS_MONO);
+    cam.initGrabber(camWidth,camHeight,false);
 #endif
 
     actual.allocate(camWidth, camHeight, OF_IMAGE_GRAYSCALE);
@@ -52,6 +50,8 @@ void testApp::setup(){
     nDir = 1;
     nFrame = -1;
     nFrameMax = 0;
+    
+    isReady = analogIn.setup();
 }
 
 
@@ -60,10 +60,6 @@ void testApp::update(){
 	cam.update();
     
 #ifdef TARGET_RASPBERRY_PI
-	if (!isReady) {
-		return;
-	}
-    
     // Check for PINS
     //
     if (nDir == 0){
@@ -155,16 +151,14 @@ void testApp::draw(){
     
     int colorValue = 255;
     
-#ifdef TARGET_RASPBERRY_PI
-    if (!isReady) {
-		return;
-	}
-	stringstream info;
-	info << "lastPotValue: "		<< potController.lastPotValue		<< "\n";
-	info << "potValue: "			<< potController.potValue			<< "\n";
-	info << "changeAmount: "		<< potController.changeAmount		<< "\n";
+    stringstream info;
+	info << "lastValue: "		<< analogIn.lastValue		<< "\n";
+	info << "value: "			<< analogIn.value			<< "\n";
+	info << "changeAmount: "    << analogIn.changeAmount		<< "\n";
     ofDrawBitmapStringHighlight(info.str(), 15, 100, ofColor::black, ofColor::yellow);
-    colorValue = ofMap(potController.potValue, 0, 1024, 0, 255, true);
+    
+#ifdef TARGET_RASPBERRY_PI
+    colorValue = ofMap(analogIn.value, 0, 1024, 0, 255, true);
 #endif
 	
     ofSetColor(colorValue);

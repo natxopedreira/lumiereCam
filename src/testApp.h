@@ -14,8 +14,9 @@
 //  http://www.cl.cam.ac.uk/projects/raspberrypi/tutorials/robot/buttons_and_switches/
 //
 #include "wiringPi.h"
-#include "AnalogIn.h"
 #endif
+
+#include "AnalogIn.h"
 
 class testApp : public ofBaseApp{
 public:
@@ -36,14 +37,15 @@ public:
 
 #ifdef TARGET_RASPBERRY_PI
     ofGstVideoUtils cam;
-    AnalogIn        analogIn;
-    bool            isReady;
 #else
     ofVideoGrabber  cam;
 #endif
     
     ofImage         prev;
     ofImage         actual;
+    
+    AnalogIn        analogIn;
+    bool            isReady;
     
     int nFrameMax;  // number of max frame
     int nFrame;     // frame head
