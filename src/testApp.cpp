@@ -10,7 +10,7 @@ void testApp::setup(){
 	int camHeight = 240*2;
     int camFps = 15;
     
-#ifdef OF_TARGET_LINUXARMV6L
+#ifdef TARGET_RASPBERRY_PI 
     //  Setup WiringPi
     //
     if(wiringPiSetup() == -1){
@@ -59,7 +59,7 @@ void testApp::setup(){
 void testApp::update(){
 	cam.update();
     
-#ifdef OF_TARGET_LINUXARMV6L
+#ifdef TARGET_RASPBERRY_PI
 	if (!isReady) {
 		return;
 	}
@@ -101,7 +101,7 @@ void testApp::update(){
                     unsigned char * pixels = actual.getPixels();
                     unsigned char * pixelsRGB = cam.getPixels();
                     for(int i = 0; i < nPixels; i++){
-#ifdef OF_TARGET_LINUXARMV6L
+#ifdef TARGET_RASPBERRY_PI
                         pixels[i] = pixelsRGB[i];
 #else
                         pixels[i] = pixelsRGB[i*3]; // take the red channel 
@@ -155,7 +155,7 @@ void testApp::draw(){
     
     int colorValue = 255;
     
-#ifdef OF_TARGET_LINUXARMV6L
+#ifdef TARGET_RASPBERRY_PI
     if (!isReady) {
 		return;
 	}

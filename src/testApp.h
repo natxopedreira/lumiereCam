@@ -2,7 +2,7 @@
 
 #include "ofMain.h"
 
-#ifdef OF_TARGET_LINUXARMV6L
+#ifdef TARGET_RASPBERRY_PI
 //  How to install wiringPi at:
 //  https://github.com/openFrameworks-RaspberryPi/openFrameworks/wiki/Raspberry-Pi-Using-the-GPIO-pins-with-Wiring-Pi-and-openFrameworks
 //
@@ -34,7 +34,7 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
 
-#ifdef OF_TARGET_LINUXARMV6L
+#ifdef TARGET_RASPBERRY_PI
     ofGstVideoUtils cam;
     AnalogIn        analogIn;
     bool            isReady;
