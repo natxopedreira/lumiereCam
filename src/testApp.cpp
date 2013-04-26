@@ -4,14 +4,14 @@
 void testApp::setup(){
     ofEnableAlphaBlending();
 	ofSetVerticalSync(true);
-	ofSetFrameRate(30);
+	ofSetFrameRate(30*2);
 
 	
 	int camWidth = 320*2;
 	int camHeight = 240*2;
-    int camFps = 15;
+    int camFps = 15*2;
     
-#ifndef TARGET_OSX
+#ifdef OF_TARGET_LINUXARMV6L
     //  Setup WiringPi
     //
     if(wiringPiSetup() == -1){
@@ -39,12 +39,7 @@ void testApp::setup(){
     
 	cam.play();
     
-    //  Or if don't use gstreamer
-    //
-//    cam.setDeviceID(1);
-//    cam.setPixelFormat(OF_PIXELS_MONO)
-//    cam.setDesiredFrameRate(camFps);
-//	cam.initGrabber(camWidth,camHeight,false);
+    isReady = analogIn.setup();
 #else
 	cam.setDesiredFrameRate(camFps);
 	cam.initGrabber(camWidth,camHeight,false);
@@ -65,7 +60,11 @@ void testApp::setup(){
 void testApp::update(){
 	cam.update();
     
-#ifndef TARGET_OSX
+#ifdef OF_TARGET_LINUXARMV6L
+	if (!isReady) {
+		return;
+	}
+    
     // Check for PINS
     //
     if (nDir == 0){
@@ -103,10 +102,10 @@ void testApp::update(){
                     unsigned char * pixels = actual.getPixels();
                     unsigned char * pixelsRGB = cam.getPixels();
                     for(int i = 0; i < nPixels; i++){
-#ifndef TARGET_OSX
-                        pixels[i] = pixelsRGB[i]; //red
+#ifdef OF_TARGET_LINUXARMV6L
+                        pixels[i] = pixelsRGB[i];
 #else
-                        pixels[i] = pixelsRGB[i*3]; //red
+                        pixels[i] = pixelsRGB[i*3]; // take the red channel 
 #endif
                     }
                     actual.setFromPixels(pixels, w, h, OF_IMAGE_GRAYSCALE);
@@ -154,8 +153,22 @@ void testApp::update(){
 //--------------------------------------------------------------
 void testApp::draw(){
 	ofBackground(0);
-		
-    ofSetColor(255);
+    
+    int colorValue = 255;
+    
+#ifdef OF_TARGET_LINUXARMV6L
+    if (!isReady) {
+		return;
+	}
+	stringstream info;
+	info << "lastPotValue: "		<< potController.lastPotValue		<< "\n";
+	info << "potValue: "			<< potController.potValue			<< "\n";
+	info << "changeAmount: "		<< potController.changeAmount		<< "\n";
+    ofDrawBitmapStringHighlight(info.str(), 15, 100, ofColor::black, ofColor::yellow);
+    colorValue = ofMap(potController.potValue, 0, 1024, 0, 255, true);
+#endif
+	
+    ofSetColor(colorValue);
 	actual.draw(ofGetWidth()*0.5 - actual.width*0.5, ofGetHeight()*0.5 - actual.height*0.5);
     
     ofDrawBitmapString("Frame: " + ofToString(nFrame) + "/" + ofToString(nFrameMax), 15,15);

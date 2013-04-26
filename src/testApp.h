@@ -14,6 +14,7 @@
 //  http://www.cl.cam.ac.uk/projects/raspberrypi/tutorials/robot/buttons_and_switches/
 //
 #include "wiringPi.h"
+#include "AnalogIn.h"
 #endif
 
 class testApp : public ofBaseApp{
@@ -33,8 +34,10 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
 
-#ifndef TARGET_OSX
+#ifdef OF_TARGET_LINUXARMV6L
     ofGstVideoUtils cam;
+    AnalogIn        analogIn;
+    bool            isReady;
 #else
     ofVideoGrabber  cam;
 #endif
