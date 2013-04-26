@@ -4,12 +4,12 @@
 void testApp::setup(){
     ofEnableAlphaBlending();
 	ofSetVerticalSync(true);
-	ofSetFrameRate(30*2);
+	ofSetFrameRate(30);
 
 	
 	int camWidth = 320*2;
 	int camHeight = 240*2;
-    int camFps = 15*2;
+    int camFps = 15;
     
 #ifdef OF_TARGET_LINUXARMV6L
     //  Setup WiringPi
