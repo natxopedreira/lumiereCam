@@ -2,7 +2,7 @@
 
 #include "ofMain.h"
 
-#ifndef TARGET_OSX
+#ifdef OF_TARGET_LINUXARMV6L
 //  How to install wiringPi at:
 //  https://github.com/openFrameworks-RaspberryPi/openFrameworks/wiki/Raspberry-Pi-Using-the-GPIO-pins-with-Wiring-Pi-and-openFrameworks
 //

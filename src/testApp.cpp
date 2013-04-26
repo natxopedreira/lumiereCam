@@ -6,7 +6,6 @@ void testApp::setup(){
 	ofSetVerticalSync(true);
 	ofSetFrameRate(30);
 
-	
 	int camWidth = 320*2;
 	int camHeight = 240*2;
     int camFps = 15;
