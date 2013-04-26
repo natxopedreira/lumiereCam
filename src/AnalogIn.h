@@ -11,7 +11,7 @@
 #include "ofMain.h"
 
 #ifdef TARGET_RASPBERRY_PI
-#include "wiringPi.h"
+#include "wiringPiSPI.h"
 #endif
 
 class AnalogIn: public ofThread {
