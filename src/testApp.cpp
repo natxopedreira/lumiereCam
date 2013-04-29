@@ -154,7 +154,7 @@ void testApp::draw(){
     stringstream info;
 	info << "lastValue: "		<< analogIn.lastValue		<< "\n";
 	info << "value: "			<< analogIn.value			<< "\n";
-	info << "changeAmount: "    << analogIn.changeAmount		<< "\n";
+	info << "changeAmount: "    << analogIn.changeAmount    << "\n";
     ofDrawBitmapStringHighlight(info.str(), 15, 100, ofColor::black, ofColor::yellow);
     
 #ifdef TARGET_RASPBERRY_PI
