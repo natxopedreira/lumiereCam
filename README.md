@@ -61,6 +61,7 @@ Need to buy:
 * [Pico Projector](http://www.amazon.com/AAXA-P4X-Projector-Lumens-Battery/dp/B007CWDFP6/ref=sr_1_cc_1?s=aps&ie=UTF8&qid=1367196150&sr=1-1-catcorr&keywords=pico+projector)
 * [Pi Cobbler breakout](http://www.adafruit.com/products/914)
 * [MCP3008](https://www.adafruit.com/products/856)
+* [Ambient Light Sensor](https://www.sparkfun.com/products/8688)
 * [Panel Mount USB Cable](http://www.adafruit.com/products/937)
 * [Power Supply](http://www.adafruit.com/products/501)
 * [Preinstall SD Card](http://www.adafruit.com/products/1121)
