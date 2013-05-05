@@ -42,29 +42,27 @@ void testApp::setup(){
 	cam.setPixelFormat(OF_PIXELS_MONO);
     cam.initGrabber(camWidth,camHeight,false);
 #endif
-
+    cam.update();
     actual.allocate(camWidth, camHeight, OF_IMAGE_GRAYSCALE);
     
-    bRec = false;
-    bLigth = false;
-    bRequest = false;
-    
-    nDir    = 0;
-    nFrame  = 0;
-    nFrameMax = 0;
-    
-    isReady = analogIn.setup();
+    //  Light Sensor
+    //
+    analogIn.setup();
+    bPlayMode = false;
+    bFrameRecorded = false;
     
     // listen on the given port
 	receiver.setup(PORT);
-    bA = false;
-    bB = false;
+    nState = nPreState = 0;
+    
+    nFrame  = 0;
+    nFrameMax = 0;
 }
 
 
 //--------------------------------------------------------------
 void testApp::update(){
-    cam.update();
+    
 #ifdef TARGET_RASPBERRY_PI
     // Check for PINS
     //
@@ -81,67 +79,89 @@ void testApp::update(){
     
     //  Light sensor
     //
-    if (analogIn.value > 512){
-        bLigth = true;
-    } else {
-        bLigth = false;
-    }
+    if (analogIn.value > 512) bPlayMode = true;
+    else bPlayMode = false;
     
     //  A&B Sensors
 	while(receiver.hasWaitingMessages()){
         ofxOscMessage m;
 		receiver.getNextMessage(&m);
+        
         // check for mouse moved message
+        //
 		if(m.getAddress() == "/AB"){
-			// both the arguments are int32's
+            bool bA,bB = false;
 			bA = m.getArgAsInt32(0);
 			bB = m.getArgAsInt32(1);
-            cout << bA << " " << bB << endl;
-		}
+		
+            //  Compute STATE
+            //  https://raw.github.com/patriciogonzalezvivo/lumiereCam/master/images/disk.png
+            //
+            nPreState = nState;
+            if      (!bA && !bB)nState = 0;
+            else if (bA && !bB) nState = 1;
+            else if (bA && bB)  nState = 2;
+            else if (!bA && bB) nState = 3;
+            
+            processState();
+        }
     }
-    
-//    if (nDir != 0){
-//        
-//        if (bLigth){
-//            moveHeader();
-//            actual.loadImage(ofToString(nFrame)+".jpg");
-//            nDir = 0;
-//        } else {
-//            
-//            if (!bRequest){
-//                bRequest = true;
-//                requestNewFrame();
-//            } else if (bRec){
-//                
-//                if (nFrame < nFrameMax-1)
-//                    nFrameMax++;
-//                
-//                moveHeader();
-//                actual.saveImage(ofToString(nFrame)+".jpg", OF_IMAGE_QUALITY_MEDIUM);
-//                bRec = false;
-//                nDir = 0;
-//            }
-//        }
-//    }
-    
 }
 
-void testApp::moveHeader(){
-    if (nDir > 0){
-        if (nFrame < nFrameMax-1)
-            nFrame++;
-    } else if (nDir < 0){
-        if (nFrame > 0)
-            nFrame--;
+void testApp::processState(){
+    
+    if ( (nState == 1) && (nPreState == 0) ){
+        // <<--
+        //
+        if (bPlayMode){
+            if (nFrame+1 < nFrameMax)
+                nFrame++;
+            
+            actual.loadImage(ofToString(nFrame)+".jpg");
+        } else {
+            if (nFrame+1 >= nFrameMax )
+                nFrameMax++;
+            if (nFrame+1 < nFrameMax)
+                nFrame++;
+            
+            requestNewFrame();
+        }
+        
+        actual.update();
+    } else if ( (nState == 2) && ( nPreState != 2)){
+        //  ( 0 )
+        //
+        if (!bPlayMode){
+            actual.saveImage(ofToString(nFrame)+".jpg", OF_IMAGE_QUALITY_MEDIUM);
+            bFrameRecorded = true;
+        }
+        
+    } else if ( (nState == 3) && ( nPreState == 0)){
+        // -->>
+        //
+        
+        if (bPlayMode){
+            if (nFrame-1 >= 0)
+                nFrame--;
+            
+            actual.loadImage(ofToString(nFrame)+".jpg");
+        } else {
+            if (nFrame+1 >= nFrameMax )
+                nFrameMax++;
+            if (nFrame+1 < nFrameMax)
+                nFrame++;
+            
+            requestNewFrame();
+        }
     }
 }
 
 void testApp::requestNewFrame(){
     
+    cam.update();
     //  Request the new pixels to the camera
     //
     if ( cam.isFrameNew() ){
-        
         int w = cam.getWidth();
         int h = cam.getHeight();
         int nPixels = w*h;
@@ -156,9 +176,9 @@ void testApp::requestNewFrame(){
 #endif
         }
         actual.setFromPixels(pixels, w, h, OF_IMAGE_GRAYSCALE);
-        
-        bRequest = false;
-        bRec = true;
+//        cout << "Request frame OK" << endl;
+    } else {
+//        cout << "Request frame ERROR" << endl;
     }
 }
 
@@ -169,11 +189,11 @@ void testApp::draw(){
     int colorValue = 255;
     
     stringstream info;
-    info << "Fps: "         << ofGetFrameRate() << "\n";
-    info << "Frame: "       << nFrame << "/" << nFrameMax << "\n";
-	info << "Direction: "   << nDir                     << "\n";
-	info << "Light Value: " << analogIn.value			<< "\n";
-    ofDrawBitmapStringHighlight(info.str(), 15, 15, ofColor::black, ofColor::yellow);
+    info << "Fps: "   << ofGetFrameRate() << "\n";
+    info << "Frame: " << nFrame << "/" << nFrameMax << "\n";
+	info << "State: " << nState << "\n";
+	info << "Light: " << analogIn.value << ((bPlayMode)?" (Play)":" (Rec)") << "\n";
+    ofDrawBitmapStringHighlight(info.str(), 15, 15, ofColor::black, ofColor::white);
     
 #ifdef TARGET_RASPBERRY_PI
     colorValue = ofMap(analogIn.value, 0, 1024, 0, 255, true);
@@ -182,9 +202,10 @@ void testApp::draw(){
     ofSetColor(colorValue);
 	actual.draw(ofGetWidth()*0.5 - actual.width*0.5, ofGetHeight()*0.5 - actual.height*0.5);
     
-    if ( bRec ){
+    if ( bFrameRecorded ){
         ofSetColor(255,0,0);
         ofCircle( ofGetWidth()*0.5 - actual.width*0.5 + 20, ofGetHeight()*0.5 - actual.height*0.5 + 20, 10);
+        bFrameRecorded = false;
     }
 }
 
@@ -192,18 +213,12 @@ void testApp::draw(){
 //--------------------------------------------------------------
 void testApp::keyPressed  (int key){
     
-    if (nDir == 0){
-        if (key == OF_KEY_RIGHT){
-            nDir = 1;
-        } else if (key == OF_KEY_LEFT){
-            nDir = -1;
+    if (key == ' '){
+        if (bPlayMode){
+            analogIn.value = 20;
+        } else {
+            analogIn.value = 1024;
         }
-    }
-    
-    if (key == 'l'){
-        analogIn.value = 1024;
-    } else if (key == 'o'){
-        analogIn.value = 20;
     }
 }
 

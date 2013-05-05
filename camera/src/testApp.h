@@ -38,7 +38,7 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
 
-    void moveHeader();
+    void processState();
     void requestNewFrame();
     
 #ifdef TARGET_RASPBERRY_PI
@@ -47,21 +47,14 @@ public:
     ofVideoGrabber  cam;
 #endif
     
-    ofImage         prev;
     ofImage         actual;
-    
-    ofxOscReceiver receiver;
-    
-    AnalogIn        analogIn;
-    bool            isReady;
-    
     int nFrameMax;  // number of max frame
     int nFrame;     // frame head
     
-    int nDir;
-    //  -1  backward
-    //  0   no move
-    //  1   forward
+    ofxOscReceiver receiver;
+    int nState;     // 0=(!A !B) 1=(A !B) 2=(A B)  3=(!A B)
+    int nPreState;  //
     
-    bool    bA,bB,bLigth,bRequest,bRec;
+    AnalogIn        analogIn;
+    bool            bPlayMode,bFrameRecorded;
 };
