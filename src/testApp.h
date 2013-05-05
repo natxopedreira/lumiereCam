@@ -35,6 +35,9 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
 
+    void moveHeader();
+    void requestNewFrame();
+    
 #ifdef TARGET_RASPBERRY_PI
     ofGstVideoUtils cam;
 #else
@@ -55,5 +58,5 @@ public:
     //  0   no move
     //  1   forward
     
-    bool    bRec,bRequest;
+    bool    bLigth,bRequest,bRec;
 };

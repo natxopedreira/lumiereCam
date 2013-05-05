@@ -46,9 +46,11 @@ void testApp::setup(){
     actual.allocate(camWidth, camHeight, OF_IMAGE_GRAYSCALE);
     
     bRec = false;
-    bRequest = true;
-    nDir = 1;
-    nFrame = -1;
+    bLigth = false;
+    bRequest = false;
+    
+    nDir    = 0;
+    nFrame  = 0;
     nFrameMax = 0;
     
     isReady = analogIn.setup();
@@ -57,8 +59,7 @@ void testApp::setup(){
 
 //--------------------------------------------------------------
 void testApp::update(){
-	cam.update();
-    
+    cam.update();
 #ifdef TARGET_RASPBERRY_PI
     // Check for PINS
     //
@@ -72,76 +73,72 @@ void testApp::update(){
         }
     }
 #endif
-	
-	if ( nDir > 0) {
-        // >>
-        //
+    
+    if (analogIn.value > 512){
+        bLigth = true;
+    } else {
+        bLigth = false;
+    }
+    
+    if (nDir != 0){
         
-        if (nFrame == nFrameMax-1){
+        if (bLigth){
+            moveHeader();
+            actual.loadImage(ofToString(nFrame)+".jpg");
+            nDir = 0;
+        } else {
             
-            //  REC
-            //
-            //  The recording is made in two stapes ( one in a frame and the other in the next one)
-            //  In order to distribute the work and make things easyier for the CPU
-            //
-            if (bRequest){
+            if (!bRequest){
+                bRequest = true;
+                requestNewFrame();
+            } else if (bRec){
                 
-                //  Request the new pixels to the camera
-                //
-                if ( cam.isFrameNew() ){
-                    
-                    int w = cam.getWidth();
-                    int h = cam.getHeight();
-                    int nPixels = w*h;
-                    
-                    unsigned char * pixels = actual.getPixels();
-                    unsigned char * pixelsRGB = cam.getPixels();
-                    for(int i = 0; i < nPixels; i++){
-#ifdef TARGET_RASPBERRY_PI
-                        pixels[i] = pixelsRGB[i];
-#else
-                        pixels[i] = pixelsRGB[i*3]; // take the red channel 
-#endif
-                    }
-                    actual.setFromPixels(pixels, w, h, OF_IMAGE_GRAYSCALE);
-                    bRequest = false;
-                    bRec = true;
-                }
+                if (nFrame < nFrameMax-1)
+                    nFrameMax++;
                 
-            } else {
-                
-                //  Save the pixels into an image
-                //
-                nFrame++;
+                moveHeader();
                 actual.saveImage(ofToString(nFrame)+".jpg", OF_IMAGE_QUALITY_MEDIUM);
-                nFrameMax++;
                 bRec = false;
                 nDir = 0;
             }
-            
-            
-        } else {
-            
-            //  PLAY
-            //
-            //  Load the next frame
-            //
+        }
+    }
+    
+}
+
+void testApp::moveHeader(){
+    if (nDir > 0){
+        if (nFrame < nFrameMax-1)
             nFrame++;
-            actual.loadImage(ofToString(nFrame)+".jpg");
-            nDir = 0;
-        }
-        
-    } else if ( nDir < 0){
-        // <<
-        //
-        
-        //  Load previus frame
-        //
-        if ( nFrame > 0){
+    } else if (nDir < 0){
+        if (nFrame > 0)
             nFrame--;
-            actual.loadImage(ofToString(nFrame)+".jpg");
+    }
+}
+
+void testApp::requestNewFrame(){
+    
+    //  Request the new pixels to the camera
+    //
+    if ( cam.isFrameNew() ){
+        
+        int w = cam.getWidth();
+        int h = cam.getHeight();
+        int nPixels = w*h;
+        
+        unsigned char * pixels = actual.getPixels();
+        unsigned char * pixelsRGB = cam.getPixels();
+        for(int i = 0; i < nPixels; i++){
+#ifdef TARGET_RASPBERRY_PI
+            pixels[i] = pixelsRGB[i];
+#else
+            pixels[i] = pixelsRGB[i*3]; // take the red channel
+#endif
         }
-        nDir = 0;
+        actual.setFromPixels(pixels, w, h, OF_IMAGE_GRAYSCALE);
+        
+        bRequest = false;
+        bRec = true;
     }
 }
 
@@ -152,10 +149,11 @@ void testApp::draw(){
     int colorValue = 255;
     
     stringstream info;
-	info << "lastValue: "		<< analogIn.lastValue		<< "\n";
-	info << "value: "			<< analogIn.value			<< "\n";
-	info << "changeAmount: "    << analogIn.changeAmount    << "\n";
-    ofDrawBitmapStringHighlight(info.str(), 15, 100, ofColor::black, ofColor::yellow);
+    info << "Fps: "         << ofGetFrameRate() << "\n";
+    info << "Frame: "       << nFrame << "/" << nFrameMax << "\n";
+	info << "Direction: "   << nDir                     << "\n";
+	info << "Light Value: " << analogIn.value			<< "\n";
+    ofDrawBitmapStringHighlight(info.str(), 15, 15, ofColor::black, ofColor::yellow);
     
 #ifdef TARGET_RASPBERRY_PI
     colorValue = ofMap(analogIn.value, 0, 1024, 0, 255, true);
@@ -163,9 +161,6 @@ void testApp::draw(){
 	
     ofSetColor(colorValue);
 	actual.draw(ofGetWidth()*0.5 - actual.width*0.5, ofGetHeight()*0.5 - actual.height*0.5);
-    
-    ofDrawBitmapString("Frame: " + ofToString(nFrame) + "/" + ofToString(nFrameMax), 15,15);
-    ofDrawBitmapString("fps: " + ofToString(ofGetFrameRate()), 15,30);
     
     if ( bRec ){
         ofSetColor(255,0,0);
@@ -180,11 +175,15 @@ void testApp::keyPressed  (int key){
     if (nDir == 0){
         if (key == OF_KEY_RIGHT){
             nDir = 1;
-            if (nFrame == nFrameMax-1)
-                bRequest = true;
         } else if (key == OF_KEY_LEFT){
             nDir = -1;
         }
+    }
+    
+    if (key == 'l'){
+        analogIn.value = 1024;
+    } else if (key == 'o'){
+        analogIn.value = 20;
     }
 }
 
