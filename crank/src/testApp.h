@@ -3,6 +3,10 @@
 #include "ofMain.h"
 #include "GuiGear.h"
 
+#include "ofxOsc.h"
+#define HOST "localhost"
+#define PORT 12345
+
 class testApp : public ofBaseApp{
 public:
     void setup();
@@ -31,6 +35,8 @@ public:
     ofRectangle         window;
     ofPoint             A,B;
     bool                onA,onB;
+    
+    ofxOscSender        sender;
     
     float           RMIN, RMAX;
     float           tweening;

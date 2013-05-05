@@ -54,6 +54,11 @@ void testApp::setup(){
     nFrameMax = 0;
     
     isReady = analogIn.setup();
+    
+    // listen on the given port
+	receiver.setup(PORT);
+    bA = false;
+    bB = false;
 }
 
 
@@ -74,35 +79,50 @@ void testApp::update(){
     }
 #endif
     
+    //  Light sensor
+    //
     if (analogIn.value > 512){
         bLigth = true;
     } else {
         bLigth = false;
     }
     
-    if (nDir != 0){
-        
-        if (bLigth){
-            moveHeader();
-            actual.loadImage(ofToString(nFrame)+".jpg");
-            nDir = 0;
-        } else {
-            
-            if (!bRequest){
-                bRequest = true;
-                requestNewFrame();
-            } else if (bRec){
-                
-                if (nFrame < nFrameMax-1)
-                    nFrameMax++;
-                
-                moveHeader();
-                actual.saveImage(ofToString(nFrame)+".jpg", OF_IMAGE_QUALITY_MEDIUM);
-                bRec = false;
-                nDir = 0;
-            }
-        }
+    //  A&B Sensors
+	while(receiver.hasWaitingMessages()){
+        ofxOscMessage m;
+		receiver.getNextMessage(&m);
+        // check for mouse moved message
+		if(m.getAddress() == "/AB"){
+			// both the arguments are int32's
+			bA = m.getArgAsInt32(0);
+			bB = m.getArgAsInt32(1);
+            cout << bA << " " << bB << endl;
+		}
     }
+    
+//    if (nDir != 0){
+//        
+//        if (bLigth){
+//            moveHeader();
+//            actual.loadImage(ofToString(nFrame)+".jpg");
+//            nDir = 0;
+//        } else {
+//            
+//            if (!bRequest){
+//                bRequest = true;
+//                requestNewFrame();
+//            } else if (bRec){
+//                
+//                if (nFrame < nFrameMax-1)
+//                    nFrameMax++;
+//                
+//                moveHeader();
+//                actual.saveImage(ofToString(nFrame)+".jpg", OF_IMAGE_QUALITY_MEDIUM);
+//                bRec = false;
+//                nDir = 0;
+//            }
+//        }
+//    }
     
 }
 

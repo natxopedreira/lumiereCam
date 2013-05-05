@@ -5,6 +5,7 @@ void testApp::setup(){
     ofSetVerticalSync(true);
     ofEnableAlphaBlending();
     ofEnableSmoothing();
+    ofSetFrameRate(30);
     
     RMIN = 30;
     RMAX = 200;
@@ -22,9 +23,10 @@ void testApp::setup(){
     bValid = false;
     bPrintToPdf = false;
     
+    // open an outgoing connection to HOST:PORT
+	sender.setup(HOST, PORT);
     onA = false;
     onB = false;
-    
 }
 
 //--------------------------------------------------------------
@@ -69,7 +71,12 @@ void testApp::update(){
         
         onA = !disk.inside(A);
         onB = !disk.inside(B);
-            
+        
+        ofxOscMessage m;
+        m.setAddress("/AB");
+        m.addIntArg( onA );
+        m.addIntArg( onB );
+        sender.sendMessage(m);
     }
     
     ofSetWindowTitle(ofToString(ofGetFrameRate()));

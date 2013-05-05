@@ -18,6 +18,9 @@
 
 #include "AnalogIn.h"
 
+#include "ofxOsc.h"
+#define PORT 12345
+
 class testApp : public ofBaseApp{
 public:
     
@@ -47,6 +50,8 @@ public:
     ofImage         prev;
     ofImage         actual;
     
+    ofxOscReceiver receiver;
+    
     AnalogIn        analogIn;
     bool            isReady;
     
@@ -58,5 +63,5 @@ public:
     //  0   no move
     //  1   forward
     
-    bool    bLigth,bRequest,bRec;
+    bool    bA,bB,bLigth,bRequest,bRec;
 };
