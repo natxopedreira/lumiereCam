@@ -3,11 +3,6 @@
 #include "ofMain.h"
 #include "GuiGear.h"
 
-//  Lenguaje: none/med/good
-//  Education: no degree/HS/BA
-//  Network: 0-10/10-100/100->
-//  Visa: none/F1-J1-H1/Greencard
-
 class testApp : public ofBaseApp{
 public:
     void setup();
@@ -29,8 +24,13 @@ public:
     float       maxRadiusBetween(GuiGear *_g1, GuiGear *_g2);
     void        drawGrid(ofRectangle _rect, float _res);
     
-	vector<GuiGear*>   gears;
-    GuiGear*           picked;
+	vector<GuiGear*>    gears;
+    GuiGear*            picked;
+    
+    ofPolyline          disk;
+    ofRectangle         window;
+    ofPoint             A,B;
+    bool                onA,onB;
     
     float           RMIN, RMAX;
     float           tweening;

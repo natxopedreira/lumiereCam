@@ -31,17 +31,10 @@ GuiGear::GuiGear(){
     bUpdating = false;
     
     type = "none";
-    loadFont("metric.ttf", 12, 120);
 }
-
-void GuiGear::loadFont(string _fontLocation, float _fontSize, int _dpi){
-    font.loadFont(_fontLocation, _fontSize, true, true);
-    font.setGlobalDpi(_dpi);
-    font.setLetterSpacing(1.1);
-}
-
 
 void GuiGear::update(){
+    prevAngle = angle;
     step();
     bUpdating = true;
 }
@@ -69,7 +62,6 @@ void GuiGear::draw(){
         } else {
             ofSetColor( ofGetStyle().color , 200);
         }
-        font.drawString( type , 0, 0, radius-7);
         
         ofPopStyle();
         ofPopMatrix();
@@ -93,14 +85,15 @@ void GuiGear::draw(){
             arrow.arc(x, y, ra,ra, a3, a4, 60);
             arrow.draw();
             
-            float   arrowAngle = ofDegToRad( (spin >= 0.0)? a2 : a3 );
+            float   diff = angle - prevAngle;
+            float   arrowAngle = ofDegToRad( (diff >= 0.0)? a2 : a3 );
             ofPoint arrowHead = ofPoint(x,y);
             arrowHead.x += cos( arrowAngle ) * ra;
             arrowHead.y += sin( arrowAngle ) * ra;
             
             ofPushMatrix();
             ofTranslate(arrowHead);
-            ofRotate( ofRadToDeg(arrowAngle) + ((spin >= 0.0)? 180 : 0) , 0, 0, 1.0);
+            ofRotate( ofRadToDeg(arrowAngle) + ((diff >= 0.0)? 180 : 0) , 0, 0, 1.0);
             ofFill();
             
             ofBeginShape();
@@ -111,7 +104,7 @@ void GuiGear::draw(){
             
             ofPopMatrix();
             
-            font.drawString( ofToString(getSpeed(),2) , x, y, ra+5);
+            ofDrawBitmapString( ofToString(getSpeed(),2), ofPoint(x-15,y+ra+5));
             ofPopStyle();
         }
     } else {

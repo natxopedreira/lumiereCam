@@ -11,14 +11,11 @@
 
 #include "ofMain.h"
 #include "Gear.h"
-#include "ofxArcText.h"
 
 class GuiGear : public Gear {
 public:
     
     GuiGear();
-    
-    void    loadFont(string _font, float _fontSize, int _dpi = 90);
     
     void    update();
     void    draw();
@@ -29,8 +26,8 @@ public:
     bool    bPrint;
     
 private:
-    ofxArcText      font;
-    bool            bUpdating;
+    float   prevAngle;
+    bool    bUpdating;
     
 };
 

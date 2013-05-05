@@ -1,5 +1,22 @@
 ![mechanics](https://raw.github.com/patriciogonzalezvivo/lumiereCam/master/images/02.jpeg)
 
+## Preparing the hardware
+
+### Need to buy
+* [RaspberryPi](http://www.adafruit.com/products/998)
+* [Ps3eye cam](http://www.amazon.com/Sony-PlayStation-Camera-Bulk-Packaging-Pc/dp/B0072I2240/ref=sr_1_1?ie=UTF8&qid=1367195222&sr=8-1&keywords=ps3eye+cam)
+* [Pico Projector](http://www.amazon.com/AAXA-P4X-Projector-Lumens-Battery/dp/B007CWDFP6/ref=sr_1_cc_1?s=aps&ie=UTF8&qid=1367196150&sr=1-1-catcorr&keywords=pico+projector)
+* [Pi Cobbler breakout](http://www.adafruit.com/products/914)
+* [MCP3008](https://www.adafruit.com/products/856)
+* [Ambient Light Sensor](https://www.sparkfun.com/products/8688)
+* [Panel Mount USB Cable](http://www.adafruit.com/products/937)
+* [Power Supply](http://www.adafruit.com/products/501)
+* [Preinstall SD Card](http://www.adafruit.com/products/1121)
+
+### Crank, Gears and disk
+In order to have a correctly look and feel we can simulate the real behavior by taking using a disk. This could be simulated using the ```crank``` app inside this repository 
+![disk](https://raw.github.com/patriciogonzalezvivo/lumiereCam/master/images/disk.png)
+
 ## Preparing the Raspberry
 
 ### [The basics](https://gist.github.com/jkosoy/5379904)
@@ -52,19 +69,6 @@ Everything is almost like [this tutorial](http://learn.adafruit.com/send-raspber
 Back and Forth switches are more simple and you can do:
 
 ![backforth](http://www.patriciogonzalezvivo.com/blog/wp-content/uploads/2013/04/Schematics_bb.png)
-
-## Preparing the hardware
-
-Need to buy:
-
-* [Ps3eye cam](http://www.amazon.com/Sony-PlayStation-Camera-Bulk-Packaging-Pc/dp/B0072I2240/ref=sr_1_1?ie=UTF8&qid=1367195222&sr=8-1&keywords=ps3eye+cam)
-* [Pico Projector](http://www.amazon.com/AAXA-P4X-Projector-Lumens-Battery/dp/B007CWDFP6/ref=sr_1_cc_1?s=aps&ie=UTF8&qid=1367196150&sr=1-1-catcorr&keywords=pico+projector)
-* [Pi Cobbler breakout](http://www.adafruit.com/products/914)
-* [MCP3008](https://www.adafruit.com/products/856)
-* [Ambient Light Sensor](https://www.sparkfun.com/products/8688)
-* [Panel Mount USB Cable](http://www.adafruit.com/products/937)
-* [Power Supply](http://www.adafruit.com/products/501)
-* [Preinstall SD Card](http://www.adafruit.com/products/1121)
 
 ## Put everything together
 

@@ -10,7 +10,7 @@ void testApp::setup(){
     RMAX = 200;
     
     picked = new GuiGear();
-    picked->set(ofGetWidth()*0.07, ofGetHeight()*0.89);
+    picked->set(ofGetWidth()*0.5, ofGetHeight()*0.5);
     picked->setRadius(50);
     picked->update();
     
@@ -22,7 +22,9 @@ void testApp::setup(){
     bValid = false;
     bPrintToPdf = false;
     
-    //ofToggleFullscreen();
+    onA = false;
+    onB = false;
+    
 }
 
 //--------------------------------------------------------------
@@ -39,6 +41,38 @@ void testApp::update(){
             break;
         }
     }
+    
+    //  Make the disk
+    //
+    if (gears.size() > 1){
+        disk.clear();
+        float diskRadio = gears[gears.size()-1]->getRadius() + 10;
+        float diskAngle = gears[gears.size()-1]->angle;
+        while (diskAngle < -PI) { diskAngle += TWO_PI; }
+        while (diskAngle > PI) { diskAngle -= TWO_PI; }
+        diskAngle = ofRadToDeg(diskAngle);
+        disk.arc( *gears[gears.size()-1], diskRadio, diskRadio, diskAngle,diskAngle+60);
+        disk.arc( *gears[gears.size()-1], diskRadio*2.0, diskRadio*2.0, diskAngle+60, diskAngle,60);
+        disk.close();
+        
+        ofPoint pos = A = B = *gears[gears.size()-1];
+        float angle = ofDegToRad(90+45);
+        pos.x -= diskRadio*2.0 * -cos(angle);
+        pos.y -= diskRadio*2.0 * sin(angle);
+        angle = ofDegToRad(90+20);
+        A.x -= diskRadio*1.5 * -cos(angle);
+        A.y -= diskRadio*1.5 * sin(angle);
+        angle = ofDegToRad(90+65);
+        B.x -= diskRadio*1.5 * -cos(angle);
+        B.y -= diskRadio*1.5 * sin(angle);
+        window.set(pos, diskRadio*0.64,diskRadio*0.48);
+        
+        onA = !disk.inside(A);
+        onB = !disk.inside(B);
+            
+    }
+    
+    ofSetWindowTitle(ofToString(ofGetFrameRate()));
 }
 
 //--------------------------------------------------------------
@@ -72,6 +106,37 @@ void testApp::draw(){
         picked->update();
         picked->draw();
     }
+    
+    //  Draw Disk
+    //
+    if (bPrintToPdf){
+        ofSetColor(0,100);
+    } else {
+        ofSetColor(255,100);
+    }
+    ofFill();
+    ofBeginShape();
+    for (int i = 0; i < disk.size(); i++) {
+        ofVertex(disk[i]);
+    }
+    ofEndShape();
+    
+    if (onA)
+        ofFill();
+    else
+        ofNoFill();
+    ofCircle(A, 10);
+    
+    if (onB)
+        ofFill();
+    else
+        ofNoFill();
+    ofCircle(B, 10);
+    
+    ofNoFill();
+    ofDrawBitmapString("A", A.x-3,A.y+4);
+    ofDrawBitmapString("B", B.x-3,B.y+4);
+    ofRect(window);
     
     //  Draw Gears
     //
