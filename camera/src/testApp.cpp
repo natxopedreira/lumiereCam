@@ -66,15 +66,15 @@ void testApp::update(){
 #ifdef TARGET_RASPBERRY_PI
     // Check for PINS
     //
-    if (nDir == 0){
-        if ( digitalRead(0) != 0 ){
-            nDir = 1;
-            if (nFrame == nFrameMax-1)
-                bRequest = true;
-        } else if ( digitalRead(3) != 0  ){
-            nDir = -1;
-        }
-    }
+//    if (nDir == 0){
+//        if ( digitalRead(0) != 0 ){
+//            nDir = 1;
+//            if (nFrame == nFrameMax-1)
+//                bRequest = true;
+//        } else if ( digitalRead(3) != 0  ){
+//            nDir = -1;
+//        }
+//    }
 #endif
     
     //  Light sensor

@@ -4,7 +4,7 @@
 #include "GuiGear.h"
 
 #include "ofxOsc.h"
-#define HOST "localhost"
+#define HOST "raspberrypi.local."//"localhost"
 #define PORT 12345
 
 class testApp : public ofBaseApp{
