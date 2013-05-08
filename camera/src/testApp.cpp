@@ -4,7 +4,7 @@
 void testApp::setup(){
     ofEnableAlphaBlending();
 	ofSetVerticalSync(true);
-	ofSetFrameRate(30);
+	//ofSetFrameRate(30);
 
 	int camWidth = 320*2;
 	int camHeight = 240*2;
@@ -62,7 +62,7 @@ void testApp::setup(){
 
 //--------------------------------------------------------------
 void testApp::update(){
-    
+  cam.update();
 #ifdef TARGET_RASPBERRY_PI
     // Check for PINS
     //
@@ -158,10 +158,10 @@ void testApp::processState(){
 
 void testApp::requestNewFrame(){
     
-    cam.update();
+  //cam.update();
     //  Request the new pixels to the camera
     //
-    if ( cam.isFrameNew() ){
+    //if ( cam.isFrameNew() ){
         int w = cam.getWidth();
         int h = cam.getHeight();
         int nPixels = w*h;
@@ -177,9 +177,9 @@ void testApp::requestNewFrame(){
         }
         actual.setFromPixels(pixels, w, h, OF_IMAGE_GRAYSCALE);
 //        cout << "Request frame OK" << endl;
-    } else {
+	//} else {
 //        cout << "Request frame ERROR" << endl;
-    }
+	//}
 }
 
 //--------------------------------------------------------------
