@@ -4,7 +4,7 @@
 void testApp::setup(){
     ofEnableAlphaBlending();
 	ofSetVerticalSync(true);
-	//ofSetFrameRate(30);
+	ofSetFrameRate(30);
 
 	int camWidth = 320*2;
 	int camHeight = 240*2;
@@ -19,7 +19,9 @@ void testApp::setup(){
     
     pinMode(0,INPUT);
     pinMode(3,INPUT);
+#endif
     
+#ifdef USE_GST
 	//optimized pipeline for the PS3Eye
     //
 	cam.allocate(camWidth,camHeight,8);
@@ -169,7 +171,9 @@ void testApp::requestNewFrame(){
         unsigned char * pixels = actual.getPixels();
         unsigned char * pixelsRGB = cam.getPixels();
         for(int i = 0; i < nPixels; i++){
-#ifdef TARGET_RASPBERRY_PI
+            
+//#ifdef TARGET_RASPBERRY_PI
+#ifdef USE_GST
             pixels[i] = pixelsRGB[i];
 #else
             pixels[i] = pixelsRGB[i*3]; // take the red channel

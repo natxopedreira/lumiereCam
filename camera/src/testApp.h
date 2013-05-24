@@ -21,6 +21,10 @@
 #include "ofxOsc.h"
 #define PORT 12345
 
+#ifdef TARGET_RASPBERRY_PI
+#define USE_GST
+#endif
+
 class testApp : public ofBaseApp{
 public:
     
@@ -41,7 +45,7 @@ public:
     void processState();
     void requestNewFrame();
     
-#ifdef TARGET_RASPBERRY_PI
+#ifdef USE_GST
     ofGstVideoUtils cam;
 #else
     ofVideoGrabber  cam;
