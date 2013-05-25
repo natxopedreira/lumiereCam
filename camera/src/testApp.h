@@ -67,5 +67,5 @@ public:
     AnalogIn        analogIn;
     
     int             width,height;
-    bool            bPlayMode,bFrameRecorded;
+    bool            bPlayMode,bFrameRecorded, bPrev, bNext;
 };

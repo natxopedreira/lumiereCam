@@ -5,11 +5,11 @@
 void testApp::setup(){
     ofEnableAlphaBlending();
 	ofSetVerticalSync(true);
-	ofSetFrameRate(30*2);
+	ofSetFrameRate(30);
 
 	int camWidth = 320*2;
 	int camHeight = 240*2;
-    int camFps = 15*2;
+    int camFps = 15;
     
 #ifdef TARGET_RASPBERRY_PI 
     //  Setup WiringPi
@@ -75,19 +75,23 @@ void testApp::setup(){
 void testApp::update(){
     
     //  Update Camera
+    //------------------------------------------------
     //
     cam.update();
     
     //  Check Light sensor
+    //------------------------------------------------
     //
-    if (analogIn.value > 512) bPlayMode = true;
-    else bPlayMode = false;
+    if (analogIn.value > 512)
+        bPlayMode = true;
+    else
+        bPlayMode = false;
     
     
     //  Check disk state based on A&B Sensors
     //------------------------------------------------
     
-    //  1. trough OSC ( Testing on MAC/PC )
+    //  1. trough OSC ( testing  )
 	while(receiver.hasWaitingMessages()){
         ofxOscMessage m;
 		receiver.getNextMessage(&m);
@@ -128,7 +132,17 @@ void testApp::update(){
     else if (!bA &&  bB) nState = 3;
 #endif
     
+    //  3. trough keys ( testing )
+    if ( bNext ){
+        nState = (nState+1)%4;
+    } else if ( bPrev ){
+        nState--;
+        if (nState == -1)
+            nState = 3;
+    }
+    
     //  Do what ever is need to do
+    //------------------------------------------------
     //
     processState();
     nPreState = nState;
@@ -154,7 +168,7 @@ void testApp::processState(){
         
         //  Crossing over the windows
         //
-        if (!bPlayMode){
+        if (!bPlayMode ){
             actual.saveImage(ofToString(nFrame)+".jpg", OF_IMAGE_QUALITY_MEDIUM);
             bFrameRecorded = true;
         }
@@ -177,48 +191,34 @@ void testApp::processState(){
 }
 
 void testApp::recordNewFrame(){
-    //  Be sure that only add new frames and don't duplicate ones
-    //
-    if ( requestNewFrame() ){
-        
-        //  If its at the head of the film add one more frame to it
-        //
-        if (nFrame+1 >= nFrameMax )
-            nFrameMax++;
-        
-        //  Go forward;
-        //
-        if (nFrame+1 < nFrameMax)
-            nFrame++;
-    }
-}
-
-bool testApp::requestNewFrame(){
-
-    //  Request the new pixels to the camera
-    //
-//    if ( cam.isFrameNew() ){
-        int w = cam.getWidth();
-        int h = cam.getHeight();
-        int nPixels = w*h;
-        
-        unsigned char * pixels = actual.getPixels();
-        unsigned char * pixelsRGB = cam.getPixels();
-        for(int i = 0; i < nPixels; i++){
-            
-#ifdef USE_GST
-            pixels[i] = pixelsRGB[i];
-#else
-            pixels[i] = pixelsRGB[i*3]; // take the red channel
-#endif
-        }
-        actual.setFromPixels(pixels, w, h, OF_IMAGE_GRAYSCALE);
-        return true;
     
-//	} else {
-//        return false;
-//    }
+    //  Copy the camera content into the actual image
+    //
+    int w = cam.getWidth();
+    int h = cam.getHeight();
+    int nPixels = w*h;
+    unsigned char * pixels = actual.getPixels();
+    unsigned char * pixelsRGB = cam.getPixels();
+    for(int i = 0; i < nPixels; i++){
+#ifdef USE_GST
+        pixels[i] = pixelsRGB[i];
+#else
+        pixels[i] = pixelsRGB[i*3]; // take the red channel
+#endif
+    }
+    actual.setFromPixels(pixels, w, h, OF_IMAGE_GRAYSCALE);
+    
+    //  If its at the head of the film add one more frame to it
+    //
+    if (nFrame+1 >= nFrameMax )
+        nFrameMax++;
+    
+    //  Go forward;
+    //
+    if (nFrame+1 < nFrameMax)
+        nFrame++;
 }
+
 
 //--------------------------------------------------------------
 void testApp::draw(){
@@ -230,19 +230,20 @@ void testApp::draw(){
 #endif
     ofSetColor(colorValue);
     
-//    shader.begin();
-//    shader.setUniformTexture("tex0",actual,0);
-//    shader.setUniformTexture("lut",lutTex, 1);
-//    shader.setUniform1f("contrast", 1.2);
-//    glBegin(GL_QUADS);
-//    glTexCoord2f(0, 0); glVertex3f(0, 0, 0);
-//    glTexCoord2f(width, 0); glVertex3f(width, 0, 0);
-//    glTexCoord2f(width, height); glVertex3f(width, height, 0);
-//    glTexCoord2f(0,height);  glVertex3f(0,height, 0);
-//    glEnd();
-//    shader.end();
+    shader.begin();
+    shader.setUniformTexture("tex0",actual,0);
+    shader.setUniformTexture("lut",lutTex, 1);
+    shader.setUniform2f("windows", (float)width, (float)height);
+    shader.setUniform1f("contrast", 1.0f);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0, 0); glVertex3f(0, 0, 0);
+    glTexCoord2f(width, 0); glVertex3f(width, 0, 0);
+    glTexCoord2f(width, height); glVertex3f(width, height, 0);
+    glTexCoord2f(0,height);  glVertex3f(0,height, 0);
+    glEnd();
+    shader.end();
     
-    actual.draw(ofGetWidth()*0.5 - actual.width*0.5, ofGetHeight()*0.5 - actual.height*0.5);
+//    actual.draw(ofGetWidth()*0.5 - actual.width*0.5, ofGetHeight()*0.5 - actual.height*0.5);
     
     stringstream info;
     info << "Fps: "   << ofGetFrameRate() << "\n";
@@ -269,17 +270,18 @@ void testApp::keyPressed  (int key){
             analogIn.value = 1024;
         }
     } else if ( key == OF_KEY_RIGHT){
-        nState = (nState+1)%4;
+        bNext = true;
+        bPrev = false;
     } else if ( key == OF_KEY_LEFT){
-        nState--;
-        if (nState == -1)
-            nState = 3;
+        bNext = false;
+        bPrev = true;
     }
 }
 
 //--------------------------------------------------------------
 void testApp::keyReleased(int key){ 
-	
+	bNext = false;
+    bPrev = false;
 }
 
 //--------------------------------------------------------------
