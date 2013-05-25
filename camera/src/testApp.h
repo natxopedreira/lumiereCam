@@ -42,14 +42,19 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
 
+    void loadLUT(string _lutFile);
     void processState();
-    void requestNewFrame();
+    void recordNewFrame();
+    bool requestNewFrame();
     
 #ifdef USE_GST
     ofGstVideoUtils cam;
 #else
     ofVideoGrabber  cam;
 #endif
+    
+    ofShader        shader;
+    ofTexture       lutTex;
     
     ofImage         actual;
     int nFrameMax;  // number of max frame
@@ -60,5 +65,7 @@ public:
     int nPreState;  //
     
     AnalogIn        analogIn;
+    
+    int             width,height;
     bool            bPlayMode,bFrameRecorded;
 };

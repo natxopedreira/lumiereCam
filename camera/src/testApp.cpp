@@ -1,14 +1,15 @@
 #include "testApp.h"
+#define STRINGIFY(A) #A
 
 //--------------------------------------------------------------
 void testApp::setup(){
     ofEnableAlphaBlending();
 	ofSetVerticalSync(true);
-	ofSetFrameRate(30);
+	ofSetFrameRate(30*2);
 
 	int camWidth = 320*2;
 	int camHeight = 240*2;
-    int camFps = 15;
+    int camFps = 15*2;
     
 #ifdef TARGET_RASPBERRY_PI 
     //  Setup WiringPi
@@ -47,6 +48,11 @@ void testApp::setup(){
     cam.update();
     actual.allocate(camWidth, camHeight, OF_IMAGE_GRAYSCALE);
     
+    //  Load Shader
+    //
+    shader.load("", "oldFilm.fs");
+    loadLUT("Gotham.cube");
+    
     //  Light Sensor
     //
     analogIn.setup();
@@ -59,32 +65,29 @@ void testApp::setup(){
     
     nFrame  = 0;
     nFrameMax = 0;
+    
+    width = ofGetWidth();
+    height = ofGetHeight();
 }
 
 
 //--------------------------------------------------------------
 void testApp::update(){
-  cam.update();
-#ifdef TARGET_RASPBERRY_PI
-    // Check for PINS
-    //
-//    if (nDir == 0){
-//        if ( digitalRead(0) != 0 ){
-//            nDir = 1;
-//            if (nFrame == nFrameMax-1)
-//                bRequest = true;
-//        } else if ( digitalRead(3) != 0  ){
-//            nDir = -1;
-//        }
-//    }
-#endif
     
-    //  Light sensor
+    //  Update Camera
+    //
+    cam.update();
+    
+    //  Check Light sensor
     //
     if (analogIn.value > 512) bPlayMode = true;
     else bPlayMode = false;
     
-    //  A&B Sensors
+    
+    //  Check disk state based on A&B Sensors
+    //------------------------------------------------
+    
+    //  1. trough OSC ( Testing on MAC/PC )
 	while(receiver.hasWaitingMessages()){
         ofxOscMessage m;
 		receiver.getNextMessage(&m);
@@ -99,21 +102,43 @@ void testApp::update(){
             //  Compute STATE
             //  https://raw.github.com/patriciogonzalezvivo/lumiereCam/master/images/disk.png
             //
-            nPreState = nState;
             if      (!bA && !bB)nState = 0;
             else if (bA && !bB) nState = 1;
             else if (bA && bB)  nState = 2;
             else if (!bA && bB) nState = 3;
-            
-            processState();
         }
     }
+    
+    //  2. trough PINS (just raspbery)
+#ifdef TARGET_RASPBERRY_PI
+    bool bA,bB = false;
+    
+    if (digitalRead(0) != 0)
+        bA = true;
+    
+    if (digitalRead(3) != 0)
+        bB = true;
+    
+    //  Compute STATE
+    //  https://raw.github.com/patriciogonzalezvivo/lumiereCam/master/images/disk.png
+    //
+    if      (!bA && !bB) nState = 0;
+    else if (bA  && !bB) nState = 1;
+    else if (bA  &&  bB) nState = 2;
+    else if (!bA &&  bB) nState = 3;
+#endif
+    
+    //  Do what ever is need to do
+    //
+    processState();
+    nPreState = nState;
 }
 
 void testApp::processState(){
     
     if ( (nState == 1) && (nPreState == 0) ){
-        // <<--
+        
+        // Going Foward
         //
         if (bPlayMode){
             if (nFrame+1 < nFrameMax)
@@ -121,17 +146,13 @@ void testApp::processState(){
             
             actual.loadImage(ofToString(nFrame)+".jpg");
         } else {
-            if (nFrame+1 >= nFrameMax )
-                nFrameMax++;
-            if (nFrame+1 < nFrameMax)
-                nFrame++;
-            
-            requestNewFrame();
+            recordNewFrame();
         }
         
         actual.update();
     } else if ( (nState == 2) && ( nPreState != 2)){
-        //  ( 0 )
+        
+        //  Crossing over the windows
         //
         if (!bPlayMode){
             actual.saveImage(ofToString(nFrame)+".jpg", OF_IMAGE_QUALITY_MEDIUM);
@@ -139,31 +160,44 @@ void testApp::processState(){
         }
         
     } else if ( (nState == 3) && ( nPreState == 0)){
-        // -->>
-        //
         
+        // Going Backguards 
+        //
         if (bPlayMode){
             if (nFrame-1 >= 0)
                 nFrame--;
             
             actual.loadImage(ofToString(nFrame)+".jpg");
         } else {
-            if (nFrame+1 >= nFrameMax )
-                nFrameMax++;
-            if (nFrame+1 < nFrameMax)
-                nFrame++;
-            
-            requestNewFrame();
+            recordNewFrame();
         }
+        
+        actual.update();
     }
 }
 
-void testApp::requestNewFrame(){
-    
-  //cam.update();
+void testApp::recordNewFrame(){
+    //  Be sure that only add new frames and don't duplicate ones
+    //
+    if ( requestNewFrame() ){
+        
+        //  If its at the head of the film add one more frame to it
+        //
+        if (nFrame+1 >= nFrameMax )
+            nFrameMax++;
+        
+        //  Go forward;
+        //
+        if (nFrame+1 < nFrameMax)
+            nFrame++;
+    }
+}
+
+bool testApp::requestNewFrame(){
+
     //  Request the new pixels to the camera
     //
-    //if ( cam.isFrameNew() ){
+//    if ( cam.isFrameNew() ){
         int w = cam.getWidth();
         int h = cam.getHeight();
         int nPixels = w*h;
@@ -172,7 +206,6 @@ void testApp::requestNewFrame(){
         unsigned char * pixelsRGB = cam.getPixels();
         for(int i = 0; i < nPixels; i++){
             
-//#ifdef TARGET_RASPBERRY_PI
 #ifdef USE_GST
             pixels[i] = pixelsRGB[i];
 #else
@@ -180,10 +213,11 @@ void testApp::requestNewFrame(){
 #endif
         }
         actual.setFromPixels(pixels, w, h, OF_IMAGE_GRAYSCALE);
-//        cout << "Request frame OK" << endl;
-	//} else {
-//        cout << "Request frame ERROR" << endl;
-	//}
+        return true;
+    
+//	} else {
+//        return false;
+//    }
 }
 
 //--------------------------------------------------------------
@@ -191,6 +225,24 @@ void testApp::draw(){
 	ofBackground(0);
     
     int colorValue = 255;
+#ifdef TARGET_RASPBERRY_PI
+    colorValue = ofMap(analogIn.value, 0, 1024, 0, 255, true);
+#endif
+    ofSetColor(colorValue);
+    
+//    shader.begin();
+//    shader.setUniformTexture("tex0",actual,0);
+//    shader.setUniformTexture("lut",lutTex, 1);
+//    shader.setUniform1f("contrast", 1.2);
+//    glBegin(GL_QUADS);
+//    glTexCoord2f(0, 0); glVertex3f(0, 0, 0);
+//    glTexCoord2f(width, 0); glVertex3f(width, 0, 0);
+//    glTexCoord2f(width, height); glVertex3f(width, height, 0);
+//    glTexCoord2f(0,height);  glVertex3f(0,height, 0);
+//    glEnd();
+//    shader.end();
+    
+    actual.draw(ofGetWidth()*0.5 - actual.width*0.5, ofGetHeight()*0.5 - actual.height*0.5);
     
     stringstream info;
     info << "Fps: "   << ofGetFrameRate() << "\n";
@@ -198,13 +250,6 @@ void testApp::draw(){
 	info << "State: " << nState << "\n";
 	info << "Light: " << analogIn.value << ((bPlayMode)?" (Play)":" (Rec)") << "\n";
     ofDrawBitmapStringHighlight(info.str(), 15, 15, ofColor::black, ofColor::white);
-    
-#ifdef TARGET_RASPBERRY_PI
-    colorValue = ofMap(analogIn.value, 0, 1024, 0, 255, true);
-#endif
-	
-    ofSetColor(colorValue);
-	actual.draw(ofGetWidth()*0.5 - actual.width*0.5, ofGetHeight()*0.5 - actual.height*0.5);
     
     if ( bFrameRecorded ){
         ofSetColor(255,0,0);
@@ -223,6 +268,12 @@ void testApp::keyPressed  (int key){
         } else {
             analogIn.value = 1024;
         }
+    } else if ( key == OF_KEY_RIGHT){
+        nState = (nState+1)%4;
+    } else if ( key == OF_KEY_LEFT){
+        nState--;
+        if (nState == -1)
+            nState = 3;
     }
 }
 
@@ -264,4 +315,34 @@ void testApp::gotMessage(ofMessage msg){
 //--------------------------------------------------------------
 void testApp::dragEvent(ofDragInfo dragInfo){ 
 
+}
+
+//--------------------------------------------------------------
+void testApp::loadLUT(string _lutFile){
+    ofBuffer buffer = ofBufferFromFile( _lutFile );
+    
+    int mapSize = 32;
+    int width = mapSize * mapSize;
+    int height = mapSize;
+    
+    float * pixels = new float[mapSize * mapSize * mapSize * 3];
+    
+    lutTex.allocate( width, height, GL_RGB32F);
+    for(int z=0; z<mapSize ; z++){
+        for(int y=0; y<mapSize; y++){
+            for(int x=0; x<mapSize; x++){
+                string content = buffer.getNextLine();
+                int pos = x + y*height + z*width;
+                
+                vector <string> splitString = ofSplitString(content, " ", true, true);
+                
+                if (splitString.size() >=3) {
+                    pixels[pos*3 + 0] = ofToFloat(splitString[0]);
+                    pixels[pos*3 + 1] = ofToFloat(splitString[1]);
+                    pixels[pos*3 + 2] = ofToFloat(splitString[2]);
+                }
+            }
+        }
+    }
+    lutTex.loadData( pixels, width, height, GL_RGB);
 }
