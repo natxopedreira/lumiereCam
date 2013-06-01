@@ -42,7 +42,6 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
 
-    void loadLUT(string _lutFile);
     void processState();
     void recordNewFrame();
     bool requestNewFrame();
@@ -54,7 +53,6 @@ public:
 #endif
     
     ofShader        shader;
-    ofTexture       lutTex;
     
     ofImage         actual;
     int nFrameMax;  // number of max frame

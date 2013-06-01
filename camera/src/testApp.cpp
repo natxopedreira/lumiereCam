@@ -51,7 +51,6 @@ void testApp::setup(){
     //  Load Shader
     //
     shader.load("", "oldFilm.fs");
-    loadLUT("Gotham.cube");
     
     //  Light Sensor
     //
@@ -231,16 +230,10 @@ void testApp::draw(){
     ofSetColor(colorValue);
     
     shader.begin();
-    shader.setUniformTexture("tex0",actual,0);
-    shader.setUniformTexture("lut",lutTex, 1);
-    shader.setUniform2f("windows", (float)width, (float)height);
-    shader.setUniform1f("contrast", 1.0f);
-    glBegin(GL_QUADS);
-    glTexCoord2f(0, 0); glVertex3f(0, 0, 0);
-    glTexCoord2f(width, 0); glVertex3f(width, 0, 0);
-    glTexCoord2f(width, height); glVertex3f(width, height, 0);
-    glTexCoord2f(0,height);  glVertex3f(0,height, 0);
-    glEnd();
+    shader.setUniform2f("resoultion", (float)width, (float)height);
+    shader.setUniform1f("time", ofGetElapsedTimef());
+    shader.setUniform1f("freq", ofGetFrameRate());
+    actual.draw(0, 0);
     shader.end();
     
 //    actual.draw(ofGetWidth()*0.5 - actual.width*0.5, ofGetHeight()*0.5 - actual.height*0.5);
@@ -319,32 +312,3 @@ void testApp::dragEvent(ofDragInfo dragInfo){
 
 }
 
-//--------------------------------------------------------------
-void testApp::loadLUT(string _lutFile){
-    ofBuffer buffer = ofBufferFromFile( _lutFile );
-    
-    int mapSize = 32;
-    int width = mapSize * mapSize;
-    int height = mapSize;
-    
-    float * pixels = new float[mapSize * mapSize * mapSize * 3];
-    
-    lutTex.allocate( width, height, GL_RGB32F);
-    for(int z=0; z<mapSize ; z++){
-        for(int y=0; y<mapSize; y++){
-            for(int x=0; x<mapSize; x++){
-                string content = buffer.getNextLine();
-                int pos = x + y*height + z*width;
-                
-                vector <string> splitString = ofSplitString(content, " ", true, true);
-                
-                if (splitString.size() >=3) {
-                    pixels[pos*3 + 0] = ofToFloat(splitString[0]);
-                    pixels[pos*3 + 1] = ofToFloat(splitString[1]);
-                    pixels[pos*3 + 2] = ofToFloat(splitString[2]);
-                }
-            }
-        }
-    }
-    lutTex.loadData( pixels, width, height, GL_RGB);
-}

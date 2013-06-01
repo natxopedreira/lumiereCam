@@ -20,13 +20,16 @@ In order to have a correctly look and feel we can simulate the real behavior by 
 ## Preparing the Raspberry
 
 ### [The basics](https://gist.github.com/jkosoy/5379904)
+	sudo apt-get clean
+	sudo apt-get update
+	sudo apt-get upgrade
+	sudo apt-get install git-core binutils git libnss-mdns
 	sudo wget http://goo.gl/1BOfJ -O /usr/bin/rpi-update && sudo chmod +x /usr/bin/rpi-update
 	sudo rpi-update
 	sudo reboot
 	sudo apt-get clean
 	sudo apt-get update
 	sudo apt-get upgrade
-	sudo apt-get install git-core binutils git libnss-mdns
 
 ### [Installing openFramewors](https://github.com/openFrameworks-RaspberryPi/openFrameworks/wiki/Raspberry-Pi-Getting-Started)
 
