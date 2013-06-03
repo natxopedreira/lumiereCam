@@ -6,10 +6,6 @@ void testApp::setup(){
     ofEnableAlphaBlending();
 	ofSetVerticalSync(true);
 	ofSetFrameRate(60);
-
-	int camWidth = 320*2;
-	int camHeight = 240*2;
-    int camFps = 15;
     
 #ifdef TARGET_RASPBERRY_PI 
     //  Setup WiringPi
@@ -21,65 +17,22 @@ void testApp::setup(){
     pinMode(0,INPUT);
     pinMode(3,INPUT);
 #endif
-    
-#ifdef USE_GST
-	//optimized pipeline for the PS3Eye
-    //
-	cam.allocate(camWidth,camHeight,8);
-	stringstream pipeline;
-	pipeline << "v4l2src name=video_source device=/dev/video0 ! video/x-raw-yuv, ";// video/x-raw-rgb,";
-	pipeline << "width="		<< camWidth	 <<	",";
-	pipeline << "height="		<< camHeight 	<<	",";
-	pipeline << "framerate="	<< camFps	 <<	"/1 ! ffmpegcolorspace ";
-    
-	bool didStart = cam.setPipeline(pipeline.str(), 8, false, camWidth, camHeight);
-	if(didStart){
-		ofLogVerbose() << "set pipeline SUCCESS";
-	} else {
-		ofLogError() << "set pipeline FAIL, pipeline: " << pipeline.str();
-	}
-    
-	cam.play();
-#else
-	cam.setDesiredFrameRate(camFps);
-	cam.setPixelFormat(OF_PIXELS_MONO);
-    cam.initGrabber(camWidth,camHeight,false);
-#endif
-    cam.update();
-    actual.allocate(camWidth, camHeight, OF_IMAGE_GRAYSCALE);
-    
-    //  Load Shader
-    //
-    //shader.load("", "oldFilm.fs");
-    
+
     //  Light Sensor
     //
     analogIn.setup();
     bPlayMode = false;
     bFrameRecorded = false;
     
-    // listen on the given port
-	receiver.setup(PORT);
     nState = nPreState = 0;
     
     nFrame  = 0;
     nFrameMax = 0;
-    
-    width = ofGetWidth();
-    height = ofGetHeight();
-    
-    bDebug = true;
 }
 
 
 //--------------------------------------------------------------
 void testApp::update(){
-    
-    //  Update Camera
-    //------------------------------------------------
-    //
-    cam.update();
-    
     //  Check Light sensor
     //------------------------------------------------
     //
@@ -92,31 +45,9 @@ void testApp::update(){
     //  Check disk state based on A&B Sensors
     //------------------------------------------------
     
-    //  1. trough OSC ( testing  )
-	while(receiver.hasWaitingMessages()){
-        ofxOscMessage m;
-		receiver.getNextMessage(&m);
-        
-        // check for mouse moved message
-        //
-		if(m.getAddress() == "/AB"){
-            bool bA,bB = false;
-			bA = m.getArgAsInt32(0);
-			bB = m.getArgAsInt32(1);
-		
-            //  Compute STATE
-            //  https://raw.github.com/patriciogonzalezvivo/lumiereCam/master/images/disk.png
-            //
-            if      (!bA && !bB)nState = 0;
-            else if (bA && !bB) nState = 1;
-            else if (bA && bB)  nState = 2;
-            else if (!bA && bB) nState = 3;
-        }
-    }
-    
     //  2. trough PINS (just raspbery)
 #ifdef TARGET_RASPBERRY_PI
-    bool bA,bB = false;
+    bA = bB = false;
     
     if (digitalRead(0) != 0)
         bA = true;
@@ -159,18 +90,18 @@ void testApp::processState(){
             if (nFrame+1 < nFrameMax)
                 nFrame++;
             
-            actual.loadImage(ofToString(nFrame)+".jpg");
+//            actual.loadImage(ofToString(nFrame)+".jpg");
         } else {
             recordNewFrame();
         }
         
-        actual.update();
+//        actual.update();
     } else if ( (nState == 2) && ( nPreState != 2)){
         
         //  Crossing over the windows
         //
         if (!bPlayMode ){
-            actual.saveImage(ofToString(nFrame,8,'0')+".jpg", OF_IMAGE_QUALITY_MEDIUM);
+//            actual.saveImage(ofToString(nFrame,8,'0')+".jpg", OF_IMAGE_QUALITY_MEDIUM);
             bFrameRecorded = true;
         }
         
@@ -182,33 +113,17 @@ void testApp::processState(){
             if (nFrame-1 >= 0)
                 nFrame--;
             
-            actual.loadImage(ofToString(nFrame,8,'0')+".jpg");
+//            actual.loadImage(ofToString(nFrame,8,'0')+".jpg");
         } else {
             recordNewFrame();
         }
         
-        actual.update();
+//        actual.update();
     }
 }
 
 void testApp::recordNewFrame(){
-    
-    //  Copy the camera content into the actual image
-    //
-    int w = cam.getWidth();
-    int h = cam.getHeight();
-    int nPixels = w*h;
-    unsigned char * pixels = actual.getPixels();
-    unsigned char * pixelsRGB = cam.getPixels();
-    for(int i = 0; i < nPixels; i++){
-#ifdef USE_GST
-        pixels[i] = pixelsRGB[i];
-#else
-        pixels[i] = pixelsRGB[i*3]; // take the red channel
-#endif
-    }
-    actual.setFromPixels(pixels, w, h, OF_IMAGE_GRAYSCALE);
-    
+        
     //  New frames allways go at the end
     //
     nFrame = nFrameMax-1;
@@ -234,44 +149,35 @@ void testApp::draw(){
     colorValue = ofMap(analogIn.value, 0, 1024, 0, 255, true);
 #endif
     ofSetColor(colorValue);
-    
-    //  Shader not working on RaspberryPi :S
-    //
-//    shader.begin();
-//    shader.setUniform2f("resoultion", (float)width, (float)height);
-//    shader.setUniform1f("time", ofGetElapsedTimef());
-//    shader.setUniform1f("freq", ofGetFrameRate());
-//    actual.draw(0, 0);
-//    shader.end();
-    
-    //  Centered and well scale image
-    //
-//    actual.draw(ofGetWidth()*0.5 - actual.width*0.5, ofGetHeight()*0.5 - actual.height*0.5);
-    
-    //  Fullscreen streeched image
-    //
-    actual.draw(0,0,ofGetWidth(),ofGetHeight());
-    
-    //  Debug
-    //
-    if (bDebug){
-        stringstream info;
-        info << "Fps: "   << ofGetFrameRate() << "\n";
-        info << "Frame: " << nFrame << "/" << nFrameMax << "\n";
-        info << "State: " << nState << "\n";
-        info << "Light: " << analogIn.value << ((bPlayMode)?" (Play)":" (Rec)") << "\n";
-        ofDrawBitmapStringHighlight(info.str(), 15, 15, ofColor::black, ofColor::white);
-        
-        if ( bFrameRecorded ){
-            ofSetColor(255,0,0);
-            ofCircle( ofGetWidth() - 20, ofGetHeight()*0.5 - 20, 10);
-            bFrameRecorded = false;
-        }
-    } else {
-        if ( bFrameRecorded ){
-            bFrameRecorded = false;
-        }
+
+    if (bA){
+        ofSetColor(255,0,0);
+        ofCircle(ofGetWidth()*0.25, ofGetHeight()*0.5, 10);
     }
+    
+    if (bB){
+        ofSetColor(255,0,0);
+        ofCircle(ofGetWidth()*0.75, ofGetHeight()*0.5, 10);
+    }
+    
+    ofSetColor(255);
+    ofDrawBitmapString("A", ofGetWidth()*0.25-5, ofGetHeight()*0.5+10);
+    ofDrawBitmapString("B", ofGetWidth()*0.75-5, ofGetHeight()*0.5+10);
+    
+    stringstream info;
+    info << "Fps: "   << ofGetFrameRate() << "\n";
+    info << "Frame: " << nFrame << "/" << nFrameMax << "\n";
+    info << "State: " << nState << "\n";
+    info << "Light: " << analogIn.value << ((bPlayMode)?" (Play)":" (Rec)") << "\n";
+    ofDrawBitmapStringHighlight(info.str(), 15, 15, ofColor::black, ofColor::white);
+    
+    if ( bFrameRecorded ){
+        ofSetColor(255,0,0);
+        ofCircle( ofGetWidth() - 20, ofGetHeight()*0.5 - 20, 10);
+        bFrameRecorded = false;
+    }
+    
+    
 }
 
 
@@ -290,8 +196,6 @@ void testApp::keyPressed  (int key){
     } else if ( key == OF_KEY_LEFT){
         bNext = false;
         bPrev = true;
-    } else if ( key == 'd'){
-        bDebug = !bDebug;
     } else if ( key == 'f'){
         ofToggleFullscreen();
     }
@@ -325,8 +229,7 @@ void testApp::mouseReleased(int x, int y, int button){
 
 //--------------------------------------------------------------
 void testApp::windowResized(int w, int h){
-    width = w;
-    height = h;
+
 }
 
 //--------------------------------------------------------------
