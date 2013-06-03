@@ -50,7 +50,7 @@ void testApp::setup(){
     
     //  Load Shader
     //
-    shader.load("", "oldFilm.fs");
+    //shader.load("", "oldFilm.fs");
     
     //  Light Sensor
     //
@@ -67,6 +67,8 @@ void testApp::setup(){
     
     width = ofGetWidth();
     height = ofGetHeight();
+    
+    bDebug = true;
 }
 
 
@@ -168,7 +170,7 @@ void testApp::processState(){
         //  Crossing over the windows
         //
         if (!bPlayMode ){
-            actual.saveImage(ofToString(nFrame)+".jpg", OF_IMAGE_QUALITY_MEDIUM);
+            actual.saveImage(ofToString(nFrame,8,'0')+".jpg", OF_IMAGE_QUALITY_MEDIUM);
             bFrameRecorded = true;
         }
         
@@ -180,7 +182,7 @@ void testApp::processState(){
             if (nFrame-1 >= 0)
                 nFrame--;
             
-            actual.loadImage(ofToString(nFrame)+".jpg");
+            actual.loadImage(ofToString(nFrame,8,'0')+".jpg");
         } else {
             recordNewFrame();
         }
@@ -207,6 +209,10 @@ void testApp::recordNewFrame(){
     }
     actual.setFromPixels(pixels, w, h, OF_IMAGE_GRAYSCALE);
     
+    //  New frames allways go at the end
+    //
+    nFrame = nFrameMax-1;
+    
     //  If its at the head of the film add one more frame to it
     //
     if (nFrame+1 >= nFrameMax )
@@ -229,26 +235,42 @@ void testApp::draw(){
 #endif
     ofSetColor(colorValue);
     
-    shader.begin();
-    shader.setUniform2f("resoultion", (float)width, (float)height);
-    shader.setUniform1f("time", ofGetElapsedTimef());
-    shader.setUniform1f("freq", ofGetFrameRate());
-    actual.draw(0, 0);
-    shader.end();
+    //  Shader not working on RaspberryPi :S
+    //
+//    shader.begin();
+//    shader.setUniform2f("resoultion", (float)width, (float)height);
+//    shader.setUniform1f("time", ofGetElapsedTimef());
+//    shader.setUniform1f("freq", ofGetFrameRate());
+//    actual.draw(0, 0);
+//    shader.end();
     
+    //  Centered and well scale image
+    //
 //    actual.draw(ofGetWidth()*0.5 - actual.width*0.5, ofGetHeight()*0.5 - actual.height*0.5);
     
-    stringstream info;
-    info << "Fps: "   << ofGetFrameRate() << "\n";
-    info << "Frame: " << nFrame << "/" << nFrameMax << "\n";
-	info << "State: " << nState << "\n";
-	info << "Light: " << analogIn.value << ((bPlayMode)?" (Play)":" (Rec)") << "\n";
-    ofDrawBitmapStringHighlight(info.str(), 15, 15, ofColor::black, ofColor::white);
+    //  Fullscreen streeched image
+    //
+    actual.draw(0,0,ofGetWidth(),ofGetHeight());
     
-    if ( bFrameRecorded ){
-        ofSetColor(255,0,0);
-        ofCircle( ofGetWidth()*0.5 - actual.width*0.5 + 20, ofGetHeight()*0.5 - actual.height*0.5 + 20, 10);
-        bFrameRecorded = false;
+    //  Debug
+    //
+    if (bDebug){
+        stringstream info;
+        info << "Fps: "   << ofGetFrameRate() << "\n";
+        info << "Frame: " << nFrame << "/" << nFrameMax << "\n";
+        info << "State: " << nState << "\n";
+        info << "Light: " << analogIn.value << ((bPlayMode)?" (Play)":" (Rec)") << "\n";
+        ofDrawBitmapStringHighlight(info.str(), 15, 15, ofColor::black, ofColor::white);
+        
+        if ( bFrameRecorded ){
+            ofSetColor(255,0,0);
+            ofCircle( ofGetWidth() - 20, ofGetHeight()*0.5 - 20, 10);
+            bFrameRecorded = false;
+        }
+    } else {
+        if ( bFrameRecorded ){
+            bFrameRecorded = false;
+        }
     }
 }
 
@@ -268,6 +290,10 @@ void testApp::keyPressed  (int key){
     } else if ( key == OF_KEY_LEFT){
         bNext = false;
         bPrev = true;
+    } else if ( key == 'd'){
+        bDebug = !bDebug;
+    } else if ( key == 'f'){
+        ofToggleFullscreen();
     }
 }
 
@@ -299,7 +325,8 @@ void testApp::mouseReleased(int x, int y, int button){
 
 //--------------------------------------------------------------
 void testApp::windowResized(int w, int h){
-
+    width = w;
+    height = h;
 }
 
 //--------------------------------------------------------------

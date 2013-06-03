@@ -52,7 +52,7 @@ public:
     ofVideoGrabber  cam;
 #endif
     
-    ofShader        shader;
+    //ofShader        shader;
     
     ofImage         actual;
     int nFrameMax;  // number of max frame
@@ -66,4 +66,5 @@ public:
     
     int             width,height;
     bool            bPlayMode,bFrameRecorded, bPrev, bNext;
+    bool            bDebug;
 };

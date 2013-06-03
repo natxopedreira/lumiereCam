@@ -79,7 +79,7 @@ void main(void)
 		
 		// Create a time-varyting vignetting effect
 		float vI = 16.0 * (uv.x * (1.0-uv.x) * uv.y * (1.0-uv.y));
-		vI *= mix( 0.7, 1.0, rand(t + 0.5));
+		vI *= mix( 0.9, 2.0, rand(t + 1.5));
 		
 		// Add additive flicker
 		vI += 1.0 + 0.4 * rand(t+8.);
@@ -120,6 +120,6 @@ void main(void)
 		
 		// Add some grain (thanks, Jose!)
 		#ifdef GRAIN
-        gl_FragColor.xyz *= (1.0+(rand(uv+t*.01)-.2)*.15);//(1.0+(rand(uv+t*.01)-.2)*.15);		
+        gl_FragColor.xyz *= (1.0+(rand(uv+t*.01)-.2)*.15);	
         #endif		
 }
