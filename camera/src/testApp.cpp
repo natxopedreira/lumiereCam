@@ -49,7 +49,13 @@ void testApp::setup(){
     
     //  Load Shader
     //
-    //shader.load("", "oldFilm.fs");
+#ifdef TARGET_RASPBERRY_PI
+    shader.load("","oldFilmGL2.fs");
+    cout << "oldFilmGL2.fs loaded" << endl;
+#else
+    shader.load("", "oldFilm.fs");
+    cout << "oldFilm.fs loaded" << endl;
+#endif
     
     //  Light Sensor
     //
@@ -66,10 +72,10 @@ void testApp::setup(){
     nFrameMax = 0;
     firstFrame = 0;
     
-    width = ofGetWidth();
-    height = ofGetHeight();
+    width = 960;
+    height = 720;
     
-    bDebug = true;
+    bDebug = false;
     bNotUsed = true;
     analogIn.value = 0;
 }
@@ -301,15 +307,20 @@ void testApp::draw(){
     //  Shader not working on RaspberryPi :S
     //
 //    shader.begin();
+//    shader.setUniformTexture("tex0", cam, 0);
 //    shader.setUniform2f("resoultion", (float)width, (float)height);
 //    shader.setUniform1f("time", ofGetElapsedTimef());
-//    shader.setUniform1f("freq", ofGetFrameRate());
-//    actual.draw(0, 0);
-//    shader.end();
+//    shader.setUniform1f("freq", 24.0);
     
     //  Centered and well scale image
     //
-    actual.draw(ofGetWidth()*0.5 - actual.width*0.5, ofGetHeight()*0.5 - actual.height*0.5);
+    ofSetColor(255);
+    actual.draw(ofGetWidth()*0.5 - width*0.5,
+                ofGetHeight()*0.5 - height*0.5,
+                width,
+                height);
+
+//    shader.end();
     
     //  Debug
     //
@@ -384,8 +395,6 @@ void testApp::mouseReleased(int x, int y, int button){
 
 //--------------------------------------------------------------
 void testApp::windowResized(int w, int h){
-    width = w;
-    height = h;
 }
 
 //--------------------------------------------------------------

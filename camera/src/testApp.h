@@ -52,7 +52,7 @@ public:
     ofVideoGrabber  cam;
 #endif
     
-    //ofShader        shader;
+    ofShader        shader;
     
     ofImage actual;
     int     nFrameMax;  // number of max frame
