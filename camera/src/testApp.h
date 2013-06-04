@@ -54,9 +54,11 @@ public:
     
     //ofShader        shader;
     
-    ofImage         actual;
-    int nFrameMax;  // number of max frame
-    int nFrame;     // frame head
+    ofImage actual;
+    int     nFrameMax;  // number of max frame
+    int     nFrame;     // frame head
+    int     firstFrame; // frame number of each new record
+    bool    bNotUsed;
     
     ofxOscReceiver receiver;
     int nState;     // 0=(!A !B) 1=(A !B) 2=(A B)  3=(!A B)

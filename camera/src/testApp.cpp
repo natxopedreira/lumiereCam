@@ -42,7 +42,6 @@ void testApp::setup(){
 	cam.play();
 #else
 	cam.setDesiredFrameRate(camFps);
-	cam.setPixelFormat(OF_PIXELS_MONO);
     cam.initGrabber(camWidth,camHeight,false);
 #endif
     cam.update();
@@ -55,6 +54,7 @@ void testApp::setup(){
     //  Light Sensor
     //
     analogIn.setup();
+    
     bPlayMode = false;
     bFrameRecorded = false;
     
@@ -64,11 +64,14 @@ void testApp::setup(){
     
     nFrame  = 0;
     nFrameMax = 0;
+    firstFrame = 0;
     
     width = ofGetWidth();
     height = ofGetHeight();
     
     bDebug = true;
+    bNotUsed = true;
+    analogIn.value = 0;
 }
 
 
@@ -83,11 +86,12 @@ void testApp::update(){
     //  Check Light sensor
     //------------------------------------------------
     //
-    if (analogIn.value > 512)
+    if (analogIn.value < 512){
         bPlayMode = true;
-    else
-        bPlayMode = false;
-    
+    }else{
+    	bPlayMode = false;
+        if(bPlayMode) bNotUsed = false;
+    }
     
     //  Check disk state based on A&B Sensors
     //------------------------------------------------
@@ -151,30 +155,77 @@ void testApp::update(){
 
 void testApp::processState(){
     
-    if ( (nState == 1) && (nPreState == 0) ){
+    //  One way
+    //
+    if ( (nState == 2) && ( nPreState != 2)){
+        
+        if (bPlayMode){
+        	if (nFrame+1 < nFrameMax){
+                nFrame++;
+            }else{
+            	nFrame=firstFrame;
+            }
+            
+            actual.loadImage(ofToString(nFrame,8,'0')+".jpg");
+            	
+        } else {
+            recordNewFrame();
+        }
+
+        actual.update();
+        
+    }
+    
+    /*
+     
+     // To ways
+     //
+    if ( (nState == 1) && (nPreState != 1)){
         
         // Going Foward
         //
         if (bPlayMode){
             if (nFrame+1 < nFrameMax)
                 nFrame++;
-            
-            actual.loadImage(ofToString(nFrame)+".jpg");
+                
+            	std::cout << "play " << nFrame << std::endl;
+            	actual.loadImage(ofToString(nFrame,8,'0')+".jpg");
+            	
         } else {
             recordNewFrame();
         }
-        
+
         actual.update();
+        
+        return;
+        
+        
     } else if ( (nState == 2) && ( nPreState != 2)){
         
         //  Crossing over the windows
         //
-        if (!bPlayMode ){
-            actual.saveImage(ofToString(nFrame,8,'0')+".jpg", OF_IMAGE_QUALITY_MEDIUM);
-            bFrameRecorded = true;
-        }
+        //if (!bPlayMode ){
+            //actual.saveImage(ofToString(nFrame,8,'0')+".jpg", OF_IMAGE_QUALITY_LOW);
+            //bFrameRecorded = true;
+        //}
+        /// solo va en un sentido
+        //if (bPlayMode){
+            //if (nFrame+1 < nFrameMax){
+                //nFrame++;
+            //}else if(nFrame-1 >= 0){
+            	//nFrame--;
+            //}
+            	//std::cout << "play " << nFrame << std::endl;
+            	//actual.loadImage(ofToString(nFrame,8,'0')+".jpg");
+            	
+        //} else {
+            //recordNewFrame();
+        //}
+
+        //actual.update();
+        //return;
         
-    } else if ( (nState == 3) && ( nPreState == 0)){
+    } else if ( (nState == 3) && (nPreState != 3)){
         
         // Going Backguards 
         //
@@ -188,31 +239,37 @@ void testApp::processState(){
         }
         
         actual.update();
-    }
+       
+        return;
+    }*/
 }
 
 void testApp::recordNewFrame(){
     
+     
     //  Copy the camera content into the actual image
-    //
-    int w = cam.getWidth();
-    int h = cam.getHeight();
-    int nPixels = w*h;
-    unsigned char * pixels = actual.getPixels();
-    unsigned char * pixelsRGB = cam.getPixels();
-    for(int i = 0; i < nPixels; i++){
+    //                       
 #ifdef USE_GST
-        pixels[i] = pixelsRGB[i];
+    actual.setFromPixels(cam.getPixels(),
+                         cam.getWidth(), cam.getHeight(),
+                         OF_IMAGE_GRAYSCALE);
 #else
-        pixels[i] = pixelsRGB[i*3]; // take the red channel
+    actual.setFromPixels(cam.getPixels(),
+                         cam.getWidth(), cam.getHeight(),
+                         OF_IMAGE_COLOR);
 #endif
+    
+    
+    if (!bPlayMode ){
+        actual.saveImage(ofToString(nFrame,8,'0')+".jpg", OF_IMAGE_QUALITY_LOW);
+        bFrameRecorded = true;
     }
-    actual.setFromPixels(pixels, w, h, OF_IMAGE_GRAYSCALE);
     
     //  New frames allways go at the end
     //
     nFrame = nFrameMax-1;
     
+
     //  If its at the head of the film add one more frame to it
     //
     if (nFrame+1 >= nFrameMax )
@@ -222,6 +279,11 @@ void testApp::recordNewFrame(){
     //
     if (nFrame+1 < nFrameMax)
         nFrame++;
+        
+    if(!bNotUsed){
+    	bNotUsed = nFrame;
+    	bNotUsed = true;
+    }
 }
 
 
@@ -235,6 +297,7 @@ void testApp::draw(){
 #endif
     ofSetColor(colorValue);
     
+    
     //  Shader not working on RaspberryPi :S
     //
 //    shader.begin();
@@ -246,11 +309,7 @@ void testApp::draw(){
     
     //  Centered and well scale image
     //
-//    actual.draw(ofGetWidth()*0.5 - actual.width*0.5, ofGetHeight()*0.5 - actual.height*0.5);
-    
-    //  Fullscreen streeched image
-    //
-    actual.draw(0,0,ofGetWidth(),ofGetHeight());
+    actual.draw(ofGetWidth()*0.5 - actual.width*0.5, ofGetHeight()*0.5 - actual.height*0.5);
     
     //  Debug
     //
@@ -279,7 +338,7 @@ void testApp::draw(){
 void testApp::keyPressed  (int key){
     
     if (key == ' '){
-        if (bPlayMode){
+        if (!bPlayMode){
             analogIn.value = 20;
         } else {
             analogIn.value = 1024;
