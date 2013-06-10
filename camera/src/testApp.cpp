@@ -95,8 +95,8 @@ void testApp::update(){
     if (analogIn.value < 512){
         bPlayMode = true;
     }else{
-    	bPlayMode = false;
         if(bPlayMode) bNotUsed = false;
+        bPlayMode = false;
     }
     
     //  Check disk state based on A&B Sensors
@@ -252,7 +252,6 @@ void testApp::processState(){
 
 void testApp::recordNewFrame(){
     
-     
     //  Copy the camera content into the actual image
     //                       
 #ifdef USE_GST
@@ -264,7 +263,6 @@ void testApp::recordNewFrame(){
                          cam.getWidth(), cam.getHeight(),
                          OF_IMAGE_COLOR);
 #endif
-    
     
     if (!bPlayMode ){
         actual.saveImage(ofToString(nFrame,8,'0')+".jpg", OF_IMAGE_QUALITY_LOW);
@@ -287,7 +285,7 @@ void testApp::recordNewFrame(){
         nFrame++;
         
     if(!bNotUsed){
-    	bNotUsed = nFrame;
+    	firstFrame = nFrame;
     	bNotUsed = true;
     }
 }
