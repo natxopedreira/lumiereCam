@@ -61,7 +61,7 @@ void testApp::draw(){
     
 	if (doShader) {
 		shader.begin();
-		shader.setUniformTexture("tex0", omxVideoGrabber.ofGetTextureReference(), 0);//omxVideoGrabber.textureID);
+		shader.setUniformTexture("tex0", omxVideoGrabber.tex, omxVideoGrabber.textureID);
 		shader.setUniform1f("time", ofGetElapsedTimef());
 		shader.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
 		ofRect(0, 0, ofGetWidth(), ofGetHeight());
@@ -90,7 +90,7 @@ void testApp::keyPressed(int key){
 	}
 
 	if (key == 'e'){
-		omxVideoGrabber.applyImageFilter(  ofRandom( imageFilters.size() ) ] );
+		omxVideoGrabber.applyImageFilter( imageFilters[ ofRandom( imageFilters.size() ) ] );
 	}
 
 
