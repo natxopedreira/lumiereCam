@@ -3,6 +3,10 @@
 #include "ofMain.h"
 #include "ofxOMXVideoGrabber.h"
 
+//  Based on Jason Van Cleave code:
+//  https://github.com/jvcleave/omxCameraApp
+//
+
 class testApp : public ofBaseApp{
 public:
 

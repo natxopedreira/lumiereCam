@@ -36,7 +36,7 @@ void testApp::setup(){
 	doShader = false;
 	shader.load("PostProcessing");
 	
-    omxVideoGrabber.setup(640, 480, 60);
+    omxVideoGrabber.setup(640, 360, 60);
 }
 
 //--------------------------------------------------------------
@@ -55,7 +55,6 @@ void testApp::draw(){
 	}
     
 	if (doShader) {
-        
 		shader.begin();
 		shader.setUniformTexture("tex0", omxVideoGrabber.tex, omxVideoGrabber.textureID);
 		shader.setUniform1f("time", ofGetElapsedTimef());
@@ -78,7 +77,7 @@ void testApp::exit(){
 	bcm_host_deinit();
 }
 //--------------------------------------------------------------
-void testApp::keyPressed  (int key){
+void testApp::keyPressed(int key){
 
 	if (key == 's'){
 		doShader = !doShader;
