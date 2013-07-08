@@ -3,7 +3,7 @@
 
 //#ifdef TARGET_OPENGLES
 //	#ifdef PROGRAMMABLE_PRESENT
-		#include "ofGLProgrammableRenderer.h"
+//		#include "ofGLProgrammableRenderer.h"
 //	#else
 //		#include "ofGLES2Renderer.h"
 //	#endif
@@ -12,7 +12,7 @@
 int main( ){
 //	#ifdef TARGET_OPENGLES
 //		#ifdef PROGRAMMABLE_PRESENT
-			ofSetCurrentRenderer(ofPtr<ofBaseRenderer>(new ofGLProgrammableRenderer()));
+//			ofSetCurrentRenderer(ofPtr<ofBaseRenderer>(new ofGLProgrammableRenderer()));
 //		#else
 //			ofSetCurrentRenderer(ofPtr<ofBaseRenderer>(new ofGLES2Renderer()));
 //		#endif

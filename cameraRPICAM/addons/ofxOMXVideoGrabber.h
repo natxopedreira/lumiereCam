@@ -17,16 +17,23 @@
 #include <IL/OMX_Video.h>
 #include <IL/OMX_Broadcom.h>
 
-class ofxOMXVideoGrabber{
+class ofxOMXVideoGrabber  : public ofBaseVideoGrabber{
 public:
 	ofxOMXVideoGrabber();
 	~ofxOMXVideoGrabber();
     
-	void    setup(int videoWidth, int videoHeight, int framerate);
+	void    initGrabber(int videoWidth, int videoHeight);
+    void    setDesiredFrameRate(int framerate);
+    
+    float	getWidth();
+    float	getHeight();
+	
 	void    draw();
 	void    close();
     
 	void    applyImageFilter(OMX_IMAGEFILTERTYPE imageFilter);
+
+private:
 	void    onCameraEventParamOrConfigChanged();
     
     OMX_ERRORTYPE   disableAllPortsForComponent(OMX_HANDLETYPE* m_handle);
@@ -47,11 +54,11 @@ public:
     
 	GLuint textureID;
 	ofTexture tex;
+
+    int     width;
+	int     height;
+	int     framerate;
 	
-	int videoWidth;
-	int videoHeight;
-	int framerate;
-	
-	bool isReady;
-	bool isClosed;
+	bool    isReady;
+	bool    isClosed;
 };

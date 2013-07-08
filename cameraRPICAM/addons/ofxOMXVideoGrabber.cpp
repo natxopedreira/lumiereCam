@@ -24,6 +24,8 @@ ofxOMXVideoGrabber::ofxOMXVideoGrabber()
 {
 	isReady = false;
 	isClosed = false;
+    framerate = 60;
+    
 }
 void ofxOMXVideoGrabber::close()
 {
@@ -59,13 +61,32 @@ ofxOMXVideoGrabber::~ofxOMXVideoGrabber()
 	close();
 }
 
+void ofxOMXVideoGrabber::setDesiredFrameRate(int framerate=60){
+    this->framerate = framerate;
+    
+    //Set the framerate
+	//
+    OMX_CONFIG_FRAMERATETYPE framerateConfig;
+	OMX_INIT_STRUCTURE(framerateConfig);
+	framerateConfig.nPortIndex = CAMERA_OUTPUT_PORT;
+	framerateConfig.xEncodeFramerate = framerate << 16; //Q16 format - 25fps
+	error = OMX_SetConfig(camera, OMX_IndexConfigVideoFramerate, &framerateConfig);
+	
+	if(error == OMX_ErrorNone)
+	{
+		ofLogVerbose() <<	"camera OMX_SetConfig OMX_IndexConfigVideoFramerate PASS";
+	}else
+	{
+		ofLog(OF_LOG_ERROR, "camera OMX_SetConfig OMX_IndexConfigVideoFramerate FAIL omx_err(0x%08x)\n", error);
+	}
+}
 
-void ofxOMXVideoGrabber::setup(int videoWidth=1280, int videoHeight=720, int framerate=60)
+void ofxOMXVideoGrabber::initGrabber(int _width=1280, int _height=720)
 {
 	bcm_host_init();
-	this->videoWidth = videoWidth;
-	this->videoHeight = videoHeight;
-	this->framerate = framerate;
+	this->width = _width;
+	this->height = _height;
+	
 	generateEGLImage();
 	
 	OMX_ERRORTYPE error = OMX_Init();
@@ -142,9 +163,9 @@ void ofxOMXVideoGrabber::setup(int videoWidth=1280, int videoHeight=720, int fra
 		ofLog(OF_LOG_ERROR, "camera OMX_GetParameter OMX_IndexParamPortDefinition FAIL omx_err(0x%08x)\n", error);
 	}
 	
-	portdef.format.image.nFrameWidth = videoWidth;
-	portdef.format.image.nFrameHeight = videoHeight;
-	portdef.format.image.nStride = videoWidth;
+	portdef.format.image.nFrameWidth = width;
+	portdef.format.image.nFrameHeight = height;
+	portdef.format.image.nStride = width;
 	error = OMX_SetParameter(camera, OMX_IndexParamPortDefinition, &portdef);
 	if(error == OMX_ErrorNone) 
 	{
@@ -154,23 +175,8 @@ void ofxOMXVideoGrabber::setup(int videoWidth=1280, int videoHeight=720, int fra
 		ofLog(OF_LOG_ERROR, "camera OMX_SetParameter OMX_IndexParamPortDefinition FAIL omx_err(0x%08x)\n", error);
 	}
 	
-	
-	//Set the framerate 
-	OMX_CONFIG_FRAMERATETYPE framerateConfig;
-	OMX_INIT_STRUCTURE(framerateConfig);
-	framerateConfig.nPortIndex = CAMERA_OUTPUT_PORT;
-	framerateConfig.xEncodeFramerate = framerate << 16; //Q16 format - 25fps
-	error = OMX_SetConfig(camera, OMX_IndexConfigVideoFramerate, &framerateConfig);
-	
-	if(error == OMX_ErrorNone) 
-	{
-		ofLogVerbose() <<	"camera OMX_SetConfig OMX_IndexConfigVideoFramerate PASS";
-	}else
-	{
-		ofLog(OF_LOG_ERROR, "camera OMX_SetConfig OMX_IndexConfigVideoFramerate FAIL omx_err(0x%08x)\n", error);
-	}
-	
-	
+    setDesiredFrameRate(60);
+    
 	//Set the sharpness 
 	OMX_CONFIG_SHARPNESSTYPE sharpness;
 	OMX_INIT_STRUCTURE(sharpness);
@@ -343,10 +349,19 @@ void ofxOMXVideoGrabber::setup(int videoWidth=1280, int videoHeight=720, int fra
 	}	 
 	
 }
-void ofxOMXVideoGrabber::draw()
-{
+
+float	ofxOMXVideoGrabber::getWidth(){
+    return width;
+}
+
+float	ofxOMXVideoGrabber::getHeight(){
+    return height;
+}
+
+void ofxOMXVideoGrabber::draw(){
 	tex.draw(0, 0);
 }
+
 OMX_ERRORTYPE ofxOMXVideoGrabber::disableAllPortsForComponent(OMX_HANDLETYPE* m_handle)
 {
 	
@@ -430,7 +445,7 @@ void ofxOMXVideoGrabber::generateEGLImage()
 	context = appEGLWindow->getEglContext();
 	
 	
-	tex.allocate(videoWidth, videoHeight, GL_RGBA);
+	tex.allocate(width, height, GL_RGBA);
 	tex.getTextureData().bFlipTexture = false;
 	tex.setTextureWrap(GL_REPEAT, GL_REPEAT);
 	textureID = tex.getTextureData().textureID;
@@ -439,7 +454,7 @@ void ofxOMXVideoGrabber::generateEGLImage()
 	glEnable(GL_TEXTURE_2D);
 	
 	// setup first texture
-	int dataSize = videoWidth * videoHeight * 4;
+	int dataSize = width * height * 4;
 	
 	GLubyte* pixelData = new GLubyte [dataSize];
 	
@@ -447,7 +462,7 @@ void ofxOMXVideoGrabber::generateEGLImage()
     memset(pixelData, 0xff, dataSize);  // white texture, opaque
 	
 	glBindTexture(GL_TEXTURE_2D, textureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, videoWidth, videoHeight, 0,
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
 				 GL_RGBA, GL_UNSIGNED_BYTE, pixelData);
 	
 	delete[] pixelData;
