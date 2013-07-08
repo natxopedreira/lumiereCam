@@ -32,6 +32,8 @@ public:
 	void    close();
     
 	void    applyImageFilter(OMX_IMAGEFILTERTYPE imageFilter);
+    
+    bool    isReady;
 
 private:
 	void    onCameraEventParamOrConfigChanged();
@@ -59,6 +61,6 @@ private:
 	int     height;
 	int     framerate;
 	
-	bool    isReady;
+	
 	bool    isClosed;
 };
