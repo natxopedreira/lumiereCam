@@ -365,8 +365,12 @@ float ofxOMXVideoGrabber::getHeight(){
     return height;
 }
 
-void ofxOMXVideoGrabber::draw(){
-	tex.draw(0, 0);
+void ofxOMXVideoGrabber::draw(float x, float y, float w, float h){
+    tex.draw(0, 0,w,h);
+}
+
+void ofxOMXVideoGrabber::draw(float x, float y){
+    tex.draw(0, 0);
 }
 
 OMX_ERRORTYPE ofxOMXVideoGrabber::disableAllPortsForComponent(OMX_HANDLETYPE* m_handle)
@@ -445,12 +449,9 @@ void ofxOMXVideoGrabber::generateEGLImage()
 	
 	//ofDisableArbTex();
 	
-	
-	
 	ofAppEGLWindow *appEGLWindow = (ofAppEGLWindow *) ofGetWindowPtr();
 	display = appEGLWindow->getEglDisplay();
 	context = appEGLWindow->getEglContext();
-	
 	
 	tex.allocate(width, height, GL_RGBA);
 	tex.getTextureData().bFlipTexture = false;

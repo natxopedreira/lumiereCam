@@ -33,7 +33,7 @@ void testApp::setup(){
 	
     imageFiltersCounter=0;
     
-	doShader = true;//false;
+	doShader = false;
 	shader.load("PostProcessing");
 	
     omxVideoGrabber.initGrabber(640, 360);
@@ -61,13 +61,13 @@ void testApp::draw(){
     
 	if (doShader) {
 		shader.begin();
-		shader.setUniformTexture("tex0", omxVideoGrabber.tex, omxVideoGrabber.textureID);
+		shader.setUniformTexture("tex0", omxVideoGrabber.ofGetTextureReference(), 0);//omxVideoGrabber.textureID);
 		shader.setUniform1f("time", ofGetElapsedTimef());
 		shader.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
 		ofRect(0, 0, ofGetWidth(), ofGetHeight());
 		shader.end();
 	} else {
-		omxVideoGrabber.draw();
+		omxVideoGrabber.draw(0,0);
 	}
 
 	ofDrawBitmapStringHighlight(ofToString(ofGetFrameRate()), 100, 100, ofColor::black, ofColor::yellow);
