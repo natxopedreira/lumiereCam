@@ -64,21 +64,7 @@ ofxOMXVideoGrabber::~ofxOMXVideoGrabber()
 void ofxOMXVideoGrabber::setDesiredFrameRate( int framerate ){
     this->framerate = framerate;
     
-    //Set the framerate
-	//
-    OMX_CONFIG_FRAMERATETYPE framerateConfig;
-	OMX_INIT_STRUCTURE(framerateConfig);
-	framerateConfig.nPortIndex = CAMERA_OUTPUT_PORT;
-	framerateConfig.xEncodeFramerate = framerate << 16; //Q16 format - 25fps
-	error = OMX_SetConfig(camera, OMX_IndexConfigVideoFramerate, &framerateConfig);
-	
-	if(error == OMX_ErrorNone)
-	{
-		ofLogVerbose() <<	"camera OMX_SetConfig OMX_IndexConfigVideoFramerate PASS";
-	}else
-	{
-		ofLog(OF_LOG_ERROR, "camera OMX_SetConfig OMX_IndexConfigVideoFramerate FAIL omx_err(0x%08x)\n", error);
-	}
+    
 }
 
 void ofxOMXVideoGrabber::initGrabber(int _width=1280, int _height=720)
@@ -175,7 +161,22 @@ void ofxOMXVideoGrabber::initGrabber(int _width=1280, int _height=720)
 		ofLog(OF_LOG_ERROR, "camera OMX_SetParameter OMX_IndexParamPortDefinition FAIL omx_err(0x%08x)\n", error);
 	}
 	
+    //Set the framerate
+	//
     setDesiredFrameRate(60);
+    OMX_CONFIG_FRAMERATETYPE framerateConfig;
+	OMX_INIT_STRUCTURE(framerateConfig);
+	framerateConfig.nPortIndex = CAMERA_OUTPUT_PORT;
+	framerateConfig.xEncodeFramerate = framerate << 16; //Q16 format - 25fps
+	error = OMX_SetConfig(camera, OMX_IndexConfigVideoFramerate, &framerateConfig);
+	
+	if(error == OMX_ErrorNone)
+	{
+		ofLogVerbose() <<	"camera OMX_SetConfig OMX_IndexConfigVideoFramerate PASS";
+	}else
+	{
+		ofLog(OF_LOG_ERROR, "camera OMX_SetConfig OMX_IndexConfigVideoFramerate FAIL omx_err(0x%08x)\n", error);
+	}
     
 	//Set the sharpness 
 	OMX_CONFIG_SHARPNESSTYPE sharpness;
