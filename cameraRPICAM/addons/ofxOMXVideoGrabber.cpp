@@ -61,7 +61,7 @@ ofxOMXVideoGrabber::~ofxOMXVideoGrabber()
 	close();
 }
 
-void ofxOMXVideoGrabber::setDesiredFrameRate(int framerate=60){
+void ofxOMXVideoGrabber::setDesiredFrameRate( int framerate ){
     this->framerate = framerate;
     
     //Set the framerate
