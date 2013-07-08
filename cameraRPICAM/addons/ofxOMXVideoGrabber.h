@@ -17,7 +17,7 @@
 #include <IL/OMX_Video.h>
 #include <IL/OMX_Broadcom.h>
 
-class ofxOMXVideoGrabber  : public ofBaseVideoGrabber{
+class ofxOMXVideoGrabber  { //: public ofBaseVideoGrabber{
 public:
 	ofxOMXVideoGrabber();
 	~ofxOMXVideoGrabber();
