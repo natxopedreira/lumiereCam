@@ -25,6 +25,7 @@ public:
 	void    initGrabber(int videoWidth, int videoHeight);
     void    setDesiredFrameRate(int framerate);
     
+    ofTexture& getTextureReference();
     float	getWidth();
     float	getHeight();
 	
@@ -35,6 +36,8 @@ public:
     
     GLuint textureID;
 	ofTexture tex;
+    
+    bool    isClosed;
     bool    isReady;
 
 private:
@@ -60,5 +63,5 @@ private:
 	int     height;
 	int     framerate;
 	
-	bool    isClosed;
+	
 };
