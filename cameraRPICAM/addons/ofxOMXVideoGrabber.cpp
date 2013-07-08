@@ -351,11 +351,17 @@ void ofxOMXVideoGrabber::initGrabber(int _width=1280, int _height=720)
 	
 }
 
-float	ofxOMXVideoGrabber::getWidth(){
+//------------------------------------
+//for getting a reference to the texture
+ofTexture & ofxOMXVideoGrabber::getTextureReference(){
+	return tex;
+}
+
+float ofxOMXVideoGrabber::getWidth(){
     return width;
 }
 
-float	ofxOMXVideoGrabber::getHeight(){
+float ofxOMXVideoGrabber::getHeight(){
     return height;
 }
 

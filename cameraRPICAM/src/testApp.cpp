@@ -36,7 +36,7 @@ void testApp::setup(){
 	doShader = true;//false;
 	shader.load("PostProcessing");
 	
-    omxVideoGrabber.setup(640, 360, 60);
+    omxVideoGrabber.initGrabber(640, 360);
 }
 
 //--------------------------------------------------------------
