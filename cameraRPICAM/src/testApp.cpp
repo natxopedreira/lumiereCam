@@ -2,6 +2,8 @@
 
 //--------------------------------------------------------------
 void testApp::setup(){
+    ofEnableAlphaBlending();
+    ofSetVerticalSync(true);
 
 	imageFilters.push_back(OMX_ImageFilterNone);
 	imageFilters.push_back(OMX_ImageFilterNoise);
@@ -28,29 +30,18 @@ void testApp::setup(){
 	imageFilters.push_back(OMX_ImageFilterPosterise);
 	imageFilters.push_back(OMX_ImageFilterColourBalance);
 	imageFilters.push_back(OMX_ImageFilterCartoon);
-
-	/*if ((unsigned int)imageFiltersCounter+1<imageFilters.size())
-	{
-		imageFiltersCounter++;
-	}else 
-	{
-		imageFiltersCounter=0;
-	}
-	ofLogVerbose() << "imageFiltersCounter: " << imageFiltersCounter;*/
 	
+    imageFiltersCounter=0;
+    
 	doShader = false;
-	ofSetLogLevel(OF_LOG_VERBOSE);
-	//consoleListener.setup(this);
-	shader.load("PostProcessing.vert", "PostProcessing.frag", "");
-	omxVideoGrabber.setup(1280, 720, 60);
+	shader.load("PostProcessing");
 	
+    omxVideoGrabber.setup(640, 480, 60);
 }
 
 //--------------------------------------------------------------
-void testApp::update()
-{
-	if (!omxVideoGrabber.isReady) 
-	{
+void testApp::update(){
+	if (!omxVideoGrabber.isReady) {
 		return;
 	}
 }
@@ -59,47 +50,38 @@ void testApp::update()
 //--------------------------------------------------------------
 void testApp::draw(){
 
-	if (!omxVideoGrabber.isReady) 
-	{
+	if (!omxVideoGrabber.isReady) {
 		return;
 	}
-	if (doShader) 
-	{
+    
+	if (doShader) {
+        
 		shader.begin();
 		shader.setUniformTexture("tex0", omxVideoGrabber.tex, omxVideoGrabber.textureID);
 		shader.setUniform1f("time", ofGetElapsedTimef());
 		shader.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
 		ofRect(0, 0, ofGetWidth(), ofGetHeight());
 		shader.end();
-	}else 
-	{
+        
+	} else {
 		omxVideoGrabber.draw();
 	}
 
-	
 	ofDrawBitmapStringHighlight(ofToString(ofGetFrameRate()), 100, 100, ofColor::black, ofColor::yellow);
 }
 
-
-
-void testApp::exit()
-{
-	if (!omxVideoGrabber.isClosed) 
-	{
-		ofLogVerbose() << "closing manually";
+void testApp::exit(){
+	if (!omxVideoGrabber.isClosed) {
 		omxVideoGrabber.close();
 	}
+    
 	bcm_host_deinit();
-
 }
 //--------------------------------------------------------------
-void testApp::keyPressed  (int key)
-{
+void testApp::keyPressed  (int key){
 
 	if (key == 's'){
 		doShader = !doShader;
-		//tex.getTextureData().bFlipTexture = !tex.getTextureData().bFlipTexture;
-		//tex.relo
 	}
 
 	if (key == 'e'){
@@ -108,12 +90,6 @@ void testApp::keyPressed  (int key)
 
 
 }
-
-//void testApp::onCharacterReceived(SSHKeyListenerEventData& e)
-//{
-//	keyPressed((int)e.character);
-//}
-
 
 //--------------------------------------------------------------
 void testApp::keyReleased(int key){

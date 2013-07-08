@@ -1,12 +1,9 @@
 #pragma once
 
 #include "ofMain.h"
-//#include "ofAppEGLWindow.h"
-//#include "ConsoleListener.h"
 #include "ofxOMXVideoGrabber.h"
 
-
-class testApp : public ofBaseApp{	//, public SSHKeyListener{
+class testApp : public ofBaseApp{
 public:
 
 	void setup();
@@ -25,13 +22,11 @@ public:
 	void gotMessage(ofMessage msg);	
 
 	ofShader shader;
-	
-	bool doShader;
-	//void onCharacterReceived(SSHKeyListenerEventData& e);
-	//ConsoleListener consoleListener;
+    bool doShader;
 	
 	ofxOMXVideoGrabber omxVideoGrabber;
 	vector<OMX_IMAGEFILTERTYPE> imageFilters;
-	int imageFiltersCounter;
+	
+    int imageFiltersCounter;
 };
 
