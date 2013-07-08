@@ -1,6 +1,6 @@
 #include "ofMain.h"
 #include "testApp.h"
-
+#include "ofGLES2Renderer.h"
 //#ifdef TARGET_OPENGLES
 //	#ifdef PROGRAMMABLE_PRESENT
 //		#include "ofGLProgrammableRenderer.h"
@@ -10,7 +10,6 @@
 //#endif
 //========================================================================
 int main( ){
-//	ofSetLogLevel(OF_LOG_VERBOSE); 
 //	#ifdef TARGET_OPENGLES
 //		#ifdef PROGRAMMABLE_PRESENT
 //			ofSetCurrentRenderer(ofPtr<ofBaseRenderer>(new ofGLProgrammableRenderer()));
@@ -18,7 +17,7 @@ int main( ){
 //			ofSetCurrentRenderer(ofPtr<ofBaseRenderer>(new ofGLES2Renderer()));
 //		#endif
 //	#endif
-    
+    ofSetCurrentRenderer(ofPtr<ofBaseRenderer>(new ofGLES2Renderer()));
 	ofSetupOpenGL(1280,720, OF_WINDOW);			// <-------- setup the GL context
 
 	// this kicks off the running of my app
