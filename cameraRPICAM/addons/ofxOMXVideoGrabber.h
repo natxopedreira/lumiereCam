@@ -31,7 +31,6 @@ public:
 	
     void    draw(float x, float y, float w, float h);
     void    draw(float x, float y);
-    using   ofBaseDraws::draw;
     
 	void    close();
     
