@@ -33,6 +33,8 @@ public:
     
 	void    applyImageFilter(OMX_IMAGEFILTERTYPE imageFilter);
     
+    GLuint textureID;
+	ofTexture tex;
     bool    isReady;
 
 private:
@@ -53,14 +55,10 @@ private:
     EGLImageKHR eglImage;
 	EGLDisplay display;
 	EGLContext context;
-    
-	GLuint textureID;
-	ofTexture tex;
 
     int     width;
 	int     height;
 	int     framerate;
-	
 	
 	bool    isClosed;
 };
