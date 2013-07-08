@@ -108,13 +108,12 @@ void testApp::mouseMoved(int x, int y ){
 
 //--------------------------------------------------------------
 void testApp::mouseDragged(int x, int y, int button){
-
-
+    
 }
 
 //--------------------------------------------------------------
 void testApp::mousePressed(int x, int y, int button){
-
+    omxVideoGrabber.applyImageFilter(ofMap(x,0,ofGetWidth(),0,imageFilters.size()));
 }
 
 //--------------------------------------------------------------
