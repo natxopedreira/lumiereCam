@@ -11,7 +11,8 @@ void testApp::setup(){
 	int camHeight = 480;
     int camFps = 30;
 #ifdef TARGET_RASPBERRY_PI
-    camHeight = 360;
+    camWidth = 640*2;
+    camHeight = 360*2;
 	imageFilters.push_back(OMX_ImageFilterNone);
 	imageFilters.push_back(OMX_ImageFilterNoise);
 	imageFilters.push_back(OMX_ImageFilterEmboss);
@@ -48,7 +49,7 @@ void testApp::setup(){
     //
 #ifdef TARGET_RASPBERRY_PI
 //    shader.load("","oldFilmGL2.fs");
-    shader.load("","PostProcessing.frag");
+    shader.load("PostProcessing.vert", "PostProcessing.frag", "");
 #else
     shader.load("", "oldFilm.fs");
 #endif
