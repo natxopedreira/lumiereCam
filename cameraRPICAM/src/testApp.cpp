@@ -48,8 +48,8 @@ void testApp::setup(){
     //  SHADERS
     //
 #ifdef TARGET_RASPBERRY_PI
-//    shader.load("","oldFilmGL2.fs");
-    shader.load("PostProcessing.vert", "PostProcessing.frag", "");
+    shader.load("","oldFilmGL2.fs");
+//    shader.load("PostProcessing.vert", "PostProcessing.frag");
 #else
     shader.load("", "oldFilm.fs");
 #endif
