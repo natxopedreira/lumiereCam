@@ -7,6 +7,7 @@
 
 #pragma once
 
+#ifdef TARGET_RASPBERRY_PI
 #include "ofMain.h"
 #include "ofAppEGLWindow.h"
 
@@ -22,13 +23,17 @@ public:
 	ofxOMXVideoGrabber();
 	~ofxOMXVideoGrabber();
     
-	void    initGrabber(int videoWidth, int videoHeight);
+	void    initGrabber(int _width=1280, int _height=720);
     void    setDesiredFrameRate(int framerate);
+    
+    bool    isInitialized();
     
     ofTexture& getTextureReference();
     float	getWidth();
     float	getHeight();
 	
+    void    update();
+    
     void    draw(float x, float y, float w, float h);
     void    draw(float x, float y);
     
@@ -39,9 +44,6 @@ public:
     GLuint textureID;
 	ofTexture tex;
     
-    bool    isClosed;
-    bool    isReady;
-
 private:
 	void    onCameraEventParamOrConfigChanged();
     
@@ -63,7 +65,11 @@ private:
 
     int     width;
 	int     height;
-	int     framerate;
+    
+	int     desiredFramerate;
 	
-	
+    bool    grabberRunning;
+	bool    bInitialized;
 };
+
+#endif

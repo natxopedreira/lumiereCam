@@ -4,7 +4,19 @@
 void testApp::setup(){
     ofEnableAlphaBlending();
     ofSetVerticalSync(true);
+    
+    int camWidth = 320*2;
+	int camHeight = 240*2;
+    int camFps = 15;
 
+	doShader = false;
+	shader.load("","oldFilm.fs","");
+
+	cam.setDesiredFrameRate(camFps);
+    cam.initGrabber(camWidth,camHeight);
+    cam.update();
+    
+#ifdef TARGET_RASPBERRY_PI
 	imageFilters.push_back(OMX_ImageFilterNone);
 	imageFilters.push_back(OMX_ImageFilterNoise);
 	imageFilters.push_back(OMX_ImageFilterEmboss);
@@ -30,20 +42,17 @@ void testApp::setup(){
 	imageFilters.push_back(OMX_ImageFilterPosterise);
 	imageFilters.push_back(OMX_ImageFilterColourBalance);
 	imageFilters.push_back(OMX_ImageFilterCartoon);
-	
     imageFiltersCounter=0;
-    
-	doShader = false;
-	shader.load("PostProcessing.vert","PostProcessing.frag","");
-	
-    omxVideoGrabber.initGrabber(640, 360);
+#endif
 }
 
 //--------------------------------------------------------------
 void testApp::update(){
-	if (!omxVideoGrabber.isReady) {
+	if (!cam.isInitialized()) {
 		return;
-	}
+	} else {
+        cam.update();
+    }
 }
 
 
@@ -51,23 +60,23 @@ void testApp::update(){
 void testApp::draw(){
     ofBackground(0);
     
-	if (!omxVideoGrabber.isReady) {
+	if (!cam.isInitialized()) {
 		return;
 	}
     
     ofPushMatrix();
-    ofTranslate(ofGetWidth()*0.5 - omxVideoGrabber.getWidth()*0.5,
-                ofGetHeight()*0.5 - omxVideoGrabber.getHeight()*0.5);
+    ofTranslate(ofGetWidth()*0.5 - cam.getWidth()*0.5,
+                ofGetHeight()*0.5 - cam.getHeight()*0.5);
     
 	if (doShader) {
 		shader.begin();
-		shader.setUniformTexture("tex0", omxVideoGrabber.tex, omxVideoGrabber.textureID);
+		shader.setUniformTexture("tex0", cam.getTextureReference(), 0); //tex, cam.textureID);
 		shader.setUniform1f("time", ofGetElapsedTimef());
-		shader.setUniform2f("resolution", omxVideoGrabber.getWidth(), omxVideoGrabber.getHeight());
-		ofRect(0, 0, omxVideoGrabber.getWidth(), omxVideoGrabber.getHeight());
+		shader.setUniform2f("resolution", cam.getWidth(), cam.getHeight());
+		ofRect(0, 0, cam.getWidth(), cam.getHeight());
 		shader.end();
 	} else {
-		omxVideoGrabber.draw(0,0);
+		cam.draw(0,0);
 	}
 
 	ofDrawBitmapStringHighlight(ofToString(ofGetFrameRate()), 100, 100, ofColor::black, ofColor::yellow);
@@ -76,11 +85,11 @@ void testApp::draw(){
 }
 
 void testApp::exit(){
-	if (!omxVideoGrabber.isClosed) {
-		omxVideoGrabber.close();
-	}
+    cam.close();
     
+#ifdef TARGET_RASPBERRY_PI
 	bcm_host_deinit();
+#endif
 }
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
@@ -89,10 +98,11 @@ void testApp::keyPressed(int key){
 		doShader = !doShader;
 	}
 
+#ifdef TARGET_RASPBERRY_PI
 	if (key == 'e'){
-		omxVideoGrabber.applyImageFilter( imageFilters[ ofRandom( imageFilters.size() ) ] );
+		cam.applyImageFilter( imageFilters[ ofRandom( imageFilters.size() ) ] );
 	}
-
+#endif
 
 }
 

@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		30b9fe8ab7b3495a4a90c9c2efc53b95 /* AnalogIn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1cc44f1579aa6008abec2fc5b61813c5 /* AnalogIn.cpp */; };
+		3D04D478178C915800C058CD /* oldFilm.fs in Sources */ = {isa = PBXBuildFile; fileRef = 3D04D476178C915800C058CD /* oldFilm.fs */; };
+		3D04D479178C915800C058CD /* oldFilmGL2.fs in Sources */ = {isa = PBXBuildFile; fileRef = 3D04D477178C915800C058CD /* oldFilmGL2.fs */; };
+		3D04D47B178C918E00C058CD /* LUT.fs in Sources */ = {isa = PBXBuildFile; fileRef = 3D04D47A178C918E00C058CD /* LUT.fs */; };
 		3D0C88D3178B475900C0921B /* ofxOMXVideoGrabber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D0C88D1178B475900C0921B /* ofxOMXVideoGrabber.cpp */; };
 		BBAB23CB13894F3D00AA2426 /* GLUT.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = BBAB23BE13894E4700AA2426 /* GLUT.framework */; };
 		E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4328148138ABC890047C5CB /* openFrameworksDebug.a */; };
@@ -63,6 +66,9 @@
 
 /* Begin PBXFileReference section */
 		1cc44f1579aa6008abec2fc5b61813c5 /* AnalogIn.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = AnalogIn.cpp; path = src/AnalogIn.cpp; sourceTree = SOURCE_ROOT; };
+		3D04D476178C915800C058CD /* oldFilm.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = oldFilm.fs; path = bin/data/oldFilm.fs; sourceTree = SOURCE_ROOT; };
+		3D04D477178C915800C058CD /* oldFilmGL2.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = oldFilmGL2.fs; path = bin/data/oldFilmGL2.fs; sourceTree = SOURCE_ROOT; };
+		3D04D47A178C918E00C058CD /* LUT.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = LUT.fs; path = bin/data/LUT.fs; sourceTree = SOURCE_ROOT; };
 		3D0C88D1178B475900C0921B /* ofxOMXVideoGrabber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ofxOMXVideoGrabber.cpp; path = addons/ofxOMXVideoGrabber.cpp; sourceTree = SOURCE_ROOT; };
 		3D0C88D2178B475900C0921B /* ofxOMXVideoGrabber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ofxOMXVideoGrabber.h; path = addons/ofxOMXVideoGrabber.h; sourceTree = SOURCE_ROOT; };
 		9d870b7ed142e7d943666999ee0786d2 /* AnalogIn.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = AnalogIn.h; path = src/AnalogIn.h; sourceTree = SOURCE_ROOT; };
@@ -120,6 +126,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3D04D474178C90A300C058CD /* RspPi */ = {
+			isa = PBXGroup;
+			children = (
+				9d870b7ed142e7d943666999ee0786d2 /* AnalogIn.h */,
+				1cc44f1579aa6008abec2fc5b61813c5 /* AnalogIn.cpp */,
+				3D0C88D2178B475900C0921B /* ofxOMXVideoGrabber.h */,
+				3D0C88D1178B475900C0921B /* ofxOMXVideoGrabber.cpp */,
+			);
+			name = RspPi;
+			sourceTree = "<group>";
+		};
+		3D04D475178C914800C058CD /* shaders */ = {
+			isa = PBXGroup;
+			children = (
+				3D04D47A178C918E00C058CD /* LUT.fs */,
+				3D04D476178C915800C058CD /* oldFilm.fs */,
+				3D04D477178C915800C058CD /* oldFilmGL2.fs */,
+			);
+			name = shaders;
+			sourceTree = "<group>";
+		};
 		BB4B014C10F69532006C3DED /* addons */ = {
 			isa = PBXGroup;
 			children = (
@@ -193,10 +220,8 @@
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* testApp.h */,
 				E4B69E1E0A3A1BDC003C02F2 /* testApp.cpp */,
-				9d870b7ed142e7d943666999ee0786d2 /* AnalogIn.h */,
-				1cc44f1579aa6008abec2fc5b61813c5 /* AnalogIn.cpp */,
-				3D0C88D2178B475900C0921B /* ofxOMXVideoGrabber.h */,
-				3D0C88D1178B475900C0921B /* ofxOMXVideoGrabber.cpp */,
+				3D04D474178C90A300C058CD /* RspPi */,
+				3D04D475178C914800C058CD /* shaders */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -298,6 +323,9 @@
 				E4B69E210A3A1BDC003C02F2 /* testApp.cpp in Sources */,
 				30b9fe8ab7b3495a4a90c9c2efc53b95 /* AnalogIn.cpp in Sources */,
 				3D0C88D3178B475900C0921B /* ofxOMXVideoGrabber.cpp in Sources */,
+				3D04D478178C915800C058CD /* oldFilm.fs in Sources */,
+				3D04D479178C915800C058CD /* oldFilmGL2.fs in Sources */,
+				3D04D47B178C918E00C058CD /* LUT.fs in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

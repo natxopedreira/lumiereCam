@@ -8,6 +8,8 @@
 
 #include "ofxOMXVideoGrabber.h"
 
+#ifdef TARGET_RASPBERRY_PI
+
 #define OMX_INIT_STRUCTURE(a) \
 memset(&(a), 0, sizeof(a)); \
 (a).nSize = sizeof(a); \
@@ -22,15 +24,14 @@ memset(&(a), 0, sizeof(a)); \
 
 ofxOMXVideoGrabber::ofxOMXVideoGrabber()
 {
-	isReady = false;
-	isClosed = false;
-    framerate = 60;
+	grabberRunning = false;
+    bInitialized = false;
+    desiredFramerate = 60;
     
 }
 void ofxOMXVideoGrabber::close()
 {
-	isReady = false;
-	/*OMX_ERRORTYPE error = OMX_SendCommand(camera, OMX_CommandStateSet, OMX_StateIdle, NULL);
+    /*OMX_ERRORTYPE error = OMX_SendCommand(camera, OMX_CommandStateSet, OMX_StateIdle, NULL);
 	error = OMX_SendCommand(render, OMX_CommandStateSet, OMX_StateIdle, NULL);
 	
 	error = OMX_SendCommand(camera, OMX_CommandFlush, CAMERA_OUTPUT_PORT, NULL);
@@ -48,28 +49,29 @@ void ofxOMXVideoGrabber::close()
 	}
 	error = OMX_Deinit(); 
 	*/
-	OMX_Deinit();
-	if (eglImage != NULL)  
-	{
-		eglDestroyImageKHR(display, eglImage);
-	}
-	
-	isClosed = true;
+    
+    if (grabberRunning){
+        OMX_Deinit();
+        if (eglImage != NULL)
+        {
+            eglDestroyImageKHR(display, eglImage);
+        }
+        grabberRunning = false;
+        bInitialized = false;
+    }
 }
 ofxOMXVideoGrabber::~ofxOMXVideoGrabber()
 {
 	close();
 }
 
-void ofxOMXVideoGrabber::setDesiredFrameRate( int framerate ){
-    this->framerate = framerate;
-    
-    
+void ofxOMXVideoGrabber::setDesiredFrameRate( int _framerate ){
+    this->desiredFramerate = _framerate;
 }
 
-void ofxOMXVideoGrabber::initGrabber(int _width=1280, int _height=720)
-{
+void ofxOMXVideoGrabber::initGrabber(int _width, int _height){
 	bcm_host_init();
+    
 	this->width = _width;
 	this->height = _height;
 	
@@ -167,7 +169,7 @@ void ofxOMXVideoGrabber::initGrabber(int _width=1280, int _height=720)
     OMX_CONFIG_FRAMERATETYPE framerateConfig;
 	OMX_INIT_STRUCTURE(framerateConfig);
 	framerateConfig.nPortIndex = CAMERA_OUTPUT_PORT;
-	framerateConfig.xEncodeFramerate = framerate << 16; //Q16 format - 25fps
+	framerateConfig.xEncodeFramerate = desiredFramerate << 16; //Q16 format - 25fps
 	error = OMX_SetConfig(camera, OMX_IndexConfigVideoFramerate, &framerateConfig);
 	
 	if(error == OMX_ErrorNone)
@@ -352,6 +354,11 @@ void ofxOMXVideoGrabber::initGrabber(int _width=1280, int _height=720)
 }
 
 //------------------------------------
+
+bool ofxOMXVideoGrabber::isInitialized(){
+    return bInitialized;
+}
+
 //for getting a reference to the texture
 ofTexture & ofxOMXVideoGrabber::getTextureReference(){
 	return tex;
@@ -363,6 +370,10 @@ float ofxOMXVideoGrabber::getWidth(){
 
 float ofxOMXVideoGrabber::getHeight(){
     return height;
+}
+
+void ofxOMXVideoGrabber::update(){
+    
 }
 
 void ofxOMXVideoGrabber::draw(float x, float y, float w, float h){
@@ -673,9 +684,10 @@ void ofxOMXVideoGrabber::onCameraEventParamOrConfigChanged()
 	if(error == OMX_ErrorNone)
 	{
 		ofLogVerbose() <<	"render OMX_FillThisBuffer PASS";
-		isReady = true;
+		bInitialized = true;
 	}else 
 	{
 		ofLog(OF_LOG_ERROR, "render OMX_FillThisBuffer FAIL omx_err(0x%08x)", error);
 	}
 }
+#endif
