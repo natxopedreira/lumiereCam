@@ -10,11 +10,6 @@ void testApp::setup(){
     int camWidth = 640;
 	int camHeight = 480;
     int camFps = 30;
-
-	cam.setDesiredFrameRate(camFps);
-    cam.initGrabber(camWidth,camHeight);
-    cam.update();
-    
 #ifdef TARGET_RASPBERRY_PI
     camHeight = 360;
 	imageFilters.push_back(OMX_ImageFilterNone);
@@ -44,12 +39,16 @@ void testApp::setup(){
 	imageFilters.push_back(OMX_ImageFilterCartoon);
     imageFiltersCounter=0;
 #endif
+    cam.setDesiredFrameRate(camFps);
+    cam.initGrabber(camWidth,camHeight);
+    cam.update();
+    
     
     //  SHADERS
     //
 #ifdef TARGET_RASPBERRY_PI
 //    shader.load("","oldFilmGL2.fs");
-    shader.load("PostProcessing.vert","PostProcessing.frag");
+    shader.load("","PostProcessing.frag");
 #else
     shader.load("", "oldFilm.fs");
 #endif
@@ -61,12 +60,12 @@ void testApp::setup(){
 #ifdef TARGET_RASPBERRY_PI
     //  Setup WiringPi
     //
-    if(wiringPiSetup() == -1){
-        printf("Error on wiringPi setup\n");
-    }
-    
-    pinMode(0,INPUT);
-    pinMode(3,INPUT);
+//    if(wiringPiSetup() == -1){
+//        printf("Error on wiringPi setup\n");
+//    }
+//    
+//    pinMode(0,INPUT);
+//    pinMode(3,INPUT);
 #endif
     
 }
