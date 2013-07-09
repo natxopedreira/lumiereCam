@@ -5,17 +5,11 @@ void testApp::setup(){
     ofEnableAlphaBlending();
     ofSetVerticalSync(true);
     
+    //  CAMERA
+    //
     int camWidth = 640;
 	int camHeight = 480;
     int camFps = 30;
-
-	doShader = false;
-    
-#ifdef TARGET_RASPBERRY_PI
-    shader.load("","oldFilmGL2.fs");
-#else
-    shader.load("", "oldFilm.fs");
-#endif
 
 	cam.setDesiredFrameRate(camFps);
     cam.initGrabber(camWidth,camHeight);
@@ -51,6 +45,29 @@ void testApp::setup(){
     imageFiltersCounter=0;
 #endif
     
+    //  SHADERS
+    //
+#ifdef TARGET_RASPBERRY_PI
+    shader.load("","oldFilmGL2.fs");
+#else
+    shader.load("", "oldFilm.fs");
+#endif
+    doShader = false;
+    
+    
+    //  INPUT/OUTPUT
+    //
+#ifdef TARGET_RASPBERRY_PI
+    //  Setup WiringPi
+    //
+    if(wiringPiSetup() == -1){
+        printf("Error on wiringPi setup\n");
+    }
+    
+    pinMode(0,INPUT);
+    pinMode(3,INPUT);
+#endif
+    
 }
 
 //--------------------------------------------------------------
@@ -84,8 +101,6 @@ void testApp::draw(){
 		ofRect(0, 0, cam.getWidth(), cam.getHeight());
 		shader.end();
 	} else {
-        
-        cam.getPixels();
         ofFloatPixels pixels;
         cam.getTextureReference().readToPixels(pixels);
         
