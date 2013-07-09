@@ -63,8 +63,8 @@ void testApp::draw(){
 		shader.begin();
 		shader.setUniformTexture("tex0", omxVideoGrabber.tex, omxVideoGrabber.textureID);
 		shader.setUniform1f("time", ofGetElapsedTimef());
-		shader.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
-		ofRect(0, 0, ofGetWidth(), ofGetHeight());
+		shader.setUniform2f("resolution", omxVideoGrabber.getWidth(), omxVideoGrabber.getHeight());
+		ofRect(0, 0, omxVideoGrabber.getWidth(), omxVideoGrabber.getHeight());
 		shader.end();
 	} else {
 		omxVideoGrabber.draw(0,0);
