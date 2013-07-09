@@ -11,6 +11,8 @@
 		3D04D478178C915800C058CD /* oldFilm.fs in Sources */ = {isa = PBXBuildFile; fileRef = 3D04D476178C915800C058CD /* oldFilm.fs */; };
 		3D04D479178C915800C058CD /* oldFilmGL2.fs in Sources */ = {isa = PBXBuildFile; fileRef = 3D04D477178C915800C058CD /* oldFilmGL2.fs */; };
 		3D04D47B178C918E00C058CD /* LUT.fs in Sources */ = {isa = PBXBuildFile; fileRef = 3D04D47A178C918E00C058CD /* LUT.fs */; };
+		3D04D480178C9E7900C058CD /* PostProcessing.frag in Sources */ = {isa = PBXBuildFile; fileRef = 3D04D47E178C9E7900C058CD /* PostProcessing.frag */; };
+		3D04D481178C9E7900C058CD /* PostProcessing.vert in Sources */ = {isa = PBXBuildFile; fileRef = 3D04D47F178C9E7900C058CD /* PostProcessing.vert */; };
 		3D0C88D3178B475900C0921B /* ofxOMXVideoGrabber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D0C88D1178B475900C0921B /* ofxOMXVideoGrabber.cpp */; };
 		BBAB23CB13894F3D00AA2426 /* GLUT.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = BBAB23BE13894E4700AA2426 /* GLUT.framework */; };
 		E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4328148138ABC890047C5CB /* openFrameworksDebug.a */; };
@@ -69,6 +71,8 @@
 		3D04D476178C915800C058CD /* oldFilm.fs */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = oldFilm.fs; path = bin/data/oldFilm.fs; sourceTree = SOURCE_ROOT; };
 		3D04D477178C915800C058CD /* oldFilmGL2.fs */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = oldFilmGL2.fs; path = bin/data/oldFilmGL2.fs; sourceTree = SOURCE_ROOT; };
 		3D04D47A178C918E00C058CD /* LUT.fs */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = LUT.fs; path = bin/data/LUT.fs; sourceTree = SOURCE_ROOT; };
+		3D04D47E178C9E7900C058CD /* PostProcessing.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = PostProcessing.frag; path = bin/data/PostProcessing.frag; sourceTree = SOURCE_ROOT; };
+		3D04D47F178C9E7900C058CD /* PostProcessing.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = PostProcessing.vert; path = bin/data/PostProcessing.vert; sourceTree = SOURCE_ROOT; };
 		3D0C88D1178B475900C0921B /* ofxOMXVideoGrabber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ofxOMXVideoGrabber.cpp; path = addons/ofxOMXVideoGrabber.cpp; sourceTree = SOURCE_ROOT; };
 		3D0C88D2178B475900C0921B /* ofxOMXVideoGrabber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ofxOMXVideoGrabber.h; path = addons/ofxOMXVideoGrabber.h; sourceTree = SOURCE_ROOT; };
 		9d870b7ed142e7d943666999ee0786d2 /* AnalogIn.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = AnalogIn.h; path = src/AnalogIn.h; sourceTree = SOURCE_ROOT; };
@@ -140,6 +144,8 @@
 		3D04D475178C914800C058CD /* shaders */ = {
 			isa = PBXGroup;
 			children = (
+				3D04D47E178C9E7900C058CD /* PostProcessing.frag */,
+				3D04D47F178C9E7900C058CD /* PostProcessing.vert */,
 				3D04D47A178C918E00C058CD /* LUT.fs */,
 				3D04D476178C915800C058CD /* oldFilm.fs */,
 				3D04D477178C915800C058CD /* oldFilmGL2.fs */,
@@ -326,6 +332,8 @@
 				3D04D478178C915800C058CD /* oldFilm.fs in Sources */,
 				3D04D479178C915800C058CD /* oldFilmGL2.fs in Sources */,
 				3D04D47B178C918E00C058CD /* LUT.fs in Sources */,
+				3D04D480178C9E7900C058CD /* PostProcessing.frag in Sources */,
+				3D04D481178C9E7900C058CD /* PostProcessing.vert in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
