@@ -34,7 +34,7 @@ void testApp::setup(){
     imageFiltersCounter=0;
     
 	doShader = false;
-	shader.load("PostProcessing");
+	shader.load("PostProcessing.vert","PostProcessing.frag","");
 	
     omxVideoGrabber.initGrabber(640, 360);
 }
@@ -113,7 +113,6 @@ void testApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void testApp::mousePressed(int x, int y, int button){
-    omxVideoGrabber.applyImageFilter( imageFilters[ ofMap(x,0,ofGetWidth(),0,imageFilters.size())] );
 }
 
 //--------------------------------------------------------------
