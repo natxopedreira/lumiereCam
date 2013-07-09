@@ -79,6 +79,9 @@ void testApp::draw(){
 		ofRect(0, 0, cam.getWidth(), cam.getHeight());
 		shader.end();
 	} else {
+        
+        ofFloatPixels pixels;
+        cam.getTextureReference().readToPixels(pixels);
 		cam.draw(0,0);
 	}
 
