@@ -10,7 +10,12 @@ void testApp::setup(){
     int camFps = 30;
 
 	doShader = false;
-	shader.load("","oldFilm.fs","");
+    
+#ifdef TARGET_RASPBERRY_PI
+    shader.load("","oldFilmGL2.fs");
+#else
+    shader.load("", "oldFilm.fs");
+#endif
 
 	cam.setDesiredFrameRate(camFps);
     cam.initGrabber(camWidth,camHeight);
@@ -80,8 +85,10 @@ void testApp::draw(){
 		shader.end();
 	} else {
         
+        cam.getPixels();
         ofFloatPixels pixels;
         cam.getTextureReference().readToPixels(pixels);
+        
 		cam.draw(0,0);
 	}
 
