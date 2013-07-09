@@ -66,9 +66,9 @@
 
 /* Begin PBXFileReference section */
 		1cc44f1579aa6008abec2fc5b61813c5 /* AnalogIn.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = AnalogIn.cpp; path = src/AnalogIn.cpp; sourceTree = SOURCE_ROOT; };
-		3D04D476178C915800C058CD /* oldFilm.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = oldFilm.fs; path = bin/data/oldFilm.fs; sourceTree = SOURCE_ROOT; };
-		3D04D477178C915800C058CD /* oldFilmGL2.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = oldFilmGL2.fs; path = bin/data/oldFilmGL2.fs; sourceTree = SOURCE_ROOT; };
-		3D04D47A178C918E00C058CD /* LUT.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = LUT.fs; path = bin/data/LUT.fs; sourceTree = SOURCE_ROOT; };
+		3D04D476178C915800C058CD /* oldFilm.fs */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = oldFilm.fs; path = bin/data/oldFilm.fs; sourceTree = SOURCE_ROOT; };
+		3D04D477178C915800C058CD /* oldFilmGL2.fs */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = oldFilmGL2.fs; path = bin/data/oldFilmGL2.fs; sourceTree = SOURCE_ROOT; };
+		3D04D47A178C918E00C058CD /* LUT.fs */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = LUT.fs; path = bin/data/LUT.fs; sourceTree = SOURCE_ROOT; };
 		3D0C88D1178B475900C0921B /* ofxOMXVideoGrabber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ofxOMXVideoGrabber.cpp; path = addons/ofxOMXVideoGrabber.cpp; sourceTree = SOURCE_ROOT; };
 		3D0C88D2178B475900C0921B /* ofxOMXVideoGrabber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ofxOMXVideoGrabber.h; path = addons/ofxOMXVideoGrabber.h; sourceTree = SOURCE_ROOT; };
 		9d870b7ed142e7d943666999ee0786d2 /* AnalogIn.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = AnalogIn.h; path = src/AnalogIn.h; sourceTree = SOURCE_ROOT; };

@@ -5,9 +5,9 @@ void testApp::setup(){
     ofEnableAlphaBlending();
     ofSetVerticalSync(true);
     
-    int camWidth = 320*2;
-	int camHeight = 240*2;
-    int camFps = 15;
+    int camWidth = 640;
+	int camHeight = 480;
+    int camFps = 30;
 
 	doShader = false;
 	shader.load("","oldFilm.fs","");
@@ -17,6 +17,7 @@ void testApp::setup(){
     cam.update();
     
 #ifdef TARGET_RASPBERRY_PI
+    camHeight = 360;
 	imageFilters.push_back(OMX_ImageFilterNone);
 	imageFilters.push_back(OMX_ImageFilterNoise);
 	imageFilters.push_back(OMX_ImageFilterEmboss);
@@ -44,6 +45,7 @@ void testApp::setup(){
 	imageFilters.push_back(OMX_ImageFilterCartoon);
     imageFiltersCounter=0;
 #endif
+    
 }
 
 //--------------------------------------------------------------
@@ -72,6 +74,7 @@ void testApp::draw(){
 		shader.begin();
 		shader.setUniformTexture("tex0", cam.getTextureReference(), 0); //tex, cam.textureID);
 		shader.setUniform1f("time", ofGetElapsedTimef());
+        shader.setUniform1f("freq", 24.0);
 		shader.setUniform2f("resolution", cam.getWidth(), cam.getHeight());
 		ofRect(0, 0, cam.getWidth(), cam.getHeight());
 		shader.end();
